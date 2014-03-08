@@ -13,4 +13,11 @@
     * Windows: `venv\scripts\activate`
     * **Note**: to exit virtualenv: `deactivate`
 1. Install dependencies: `pip install -r requirements.txt`
-1. Run the app: `python app/routes.py`
+
+## Running the app
+1. Activate virtualenv
+* \*nix: `./run.py`
+* Windows: `venv\scripts\python run.py`
+
+## Flask tutorial
+This is the (tutorial)[http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world] to get started/use as a reference for Flask apps.
