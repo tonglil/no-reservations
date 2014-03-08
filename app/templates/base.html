@@ -1,0 +1,15 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{title}} - No Reservations</title>
+        {% else %}
+        <title>No Reservations</title>
+        {% endif %}
+    </head>
+    <body>
+        <div>No Reservations: <a href="/index">Home</a></div>
+        <hr>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
