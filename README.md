@@ -20,4 +20,4 @@
 * Windows: `venv\scripts\python run.py`
 
 ## Flask tutorial
-This is the (tutorial)[http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world] to get started/use as a reference for Flask apps.
+This is the [tutorial](http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) to get started/use as a reference for Flask apps.
