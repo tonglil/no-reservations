@@ -5,10 +5,7 @@ This application requires the following to be installed:
 * [mysql 5.6](http://dev.mysql.com/downloads/mysql/)
 * python 2.7
 * pip
-* [virtualenv](#virtualenv)
-
-### virtualenv
-You can build natively or use pip: `sudo pip install virtualenv`
+* virtualenv: you can build natively or use pip: `sudo pip install virtualenv`
 
 ## Getting started
 1. Clone repository:
@@ -21,15 +18,18 @@ You can build natively or use pip: `sudo pip install virtualenv`
     * Windows: `venv\scripts\activate`
     * **Note**: to exit virtualenv: `deactivate`
 1. Install dependencies: `pip install -r requirements.txt`
-1. Create the database
+1. Create the database for the first time
 
-### Set up the database
-1. Log into mysql with user root password root: `mysql -u root -p`
-1. Create the database: `create database no_reservations`
-1. Activate virtualenv
-1. `python`
-1. `from app import db`
-1. `db.create_all()`
+## The database
+* Log into mysql with user root password root: `mysql -u root -p`
+* Create the database: `create database no_reservations`
+* Create tables:
+    1. Activate virtualenv
+    1. `python`
+    1. `from app import db`
+    1. `db.create_all()`
+* Drop (delete) the database: `drop database no_reservations`
+* Drop a table: `drop table table_name`
 
 ## Running the app
 1. Activate virtualenv
