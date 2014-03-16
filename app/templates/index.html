@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1>Hi, {{user.nickname}}!</h1>
-{% for post in posts %}
-<div><p>{{post.author.nickname}} says: <b>{{post.body}}</b></p></div>
-{% endfor %}
+<div class="site-wrapper">
+    <div class="container">
+        <div class="inner cover">
+            <div class="jumbotron">
+                <h1 class="cover-heading">The Simple Library System</h1>
+                <p class="lead">Featuring Stripe payment integration.</p>
+                <!--<p class="lead">-->
+                    <!--<a href="#" class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a>-->
+                <!--</p>-->
+            </div>
+        </div>
+    </div><!-- /.container -->
+</div>
 {% endblock %}
