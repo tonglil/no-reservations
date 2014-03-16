@@ -1,8 +1,6 @@
 from app import db
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import ForeignKeyConstraint
-
-Base = declarative_base()
+from datetime import datetime
 
 
 # Borrower *:1 BorrowerType
@@ -26,27 +24,38 @@ class Borrower(db.Model):
 
 
 # Borrower *:1 BorrowerType
+#TODO: set time limit to something fluid, or a chunk
 class BorrowerType(db.Model):
     type = db.Column(db.String(255), primary_key=True)
-    bookTimeLimit = db.Column(db.DateTime)
+    bookTimeLimit = db.Column(db.Interval)
     borrowers = db.relationship('Borrower', backref='borrower_type',
                                 lazy='dynamic')
 
+    def __init__(self, type, time):
+        self.type = type
+        self.bookTimeLimit = time
+
 
 # Join table for the Book:Author relationship
-class HasAuthor(db.Model):
-    callNumber = db.Column(db.String(50), db.ForeignKey('book.callNumber'),
-                           primary_key=True)
-    name = db.Column(db.String(255), db.ForeignKey('author.name'),
-                     primary_key=True)
+HasAuthor = db.Table('has_author',
+                     db.Column('callNumber', db.String(50),
+                               db.ForeignKey('book.callNumber'),
+                               primary_key=True),
+                     db.Column('name', db.String(255),
+                               db.ForeignKey('author.name'),
+                               primary_key=True)
+                     )
 
 
 # Join table for the Book:Subject relationship
-class HasSubject(db.Model):
-    callNumber = db.Column(db.String(50), db.ForeignKey('book.callNumber'),
-                           primary_key=True)
-    subject = db.Column(db.String(255), db.ForeignKey('subject.subName'),
-                        primary_key=True)
+HasSubject = db.Table('has_subject',
+                      db.Column('callNumber', db.String(50),
+                                db.ForeignKey('book.callNumber'),
+                                primary_key=True),
+                      db.Column('subject', db.String(255),
+                                db.ForeignKey('subject.subName'),
+                                primary_key=True)
+                      )
 
 
 # Book *:* Author
@@ -126,6 +135,9 @@ class Borrowing(db.Model):
                       {})
     fines = db.relationship('Fine', backref='borrowing', lazy='dynamic')
 
+    def __init__(self):
+        self.outDate = datetime.now
+
 
 # Fines *:1 Borrowing
 class Fine(db.Model):
@@ -135,3 +147,6 @@ class Fine(db.Model):
     paidDate = db.Column(db.DateTime)
     borid = db.Column(db.Integer, db.ForeignKey('borrowing.borid'),
                       nullable=False)
+
+    def __init__(self):
+        self.issuedDate = datetime.now
