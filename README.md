@@ -18,24 +18,29 @@ This application requires the following to be installed:
     * Windows: `venv\scripts\activate`
     * **Note**: to exit virtualenv: `deactivate`
 1. Install dependencies: `pip install -r requirements.txt`
-1. Create the database for the first time
-
-## The database
-* Log into mysql with user root password root: `mysql -u root -p`
-* Create the database: `create database no_reservations`
-* Create tables:
-    1. Activate virtualenv
-    1. `python`
-    1. `from app import db`
-    1. `db.create_all()`
-* Drop (delete) the database: `drop database no_reservations`
-* Drop a table: `drop table table_name`
+1. Create the database in mysql for the first time
 
 ## Running the app
 1. Activate virtualenv
-* \*nix: `./run.py`
-* Windows: `venv\scripts\python run.py`
+1. Run `run.py` to create the database tables from the model definitions if they do not exist
+1. Run `run_reset_db.py` to automatically **drop** and create the database tables
 1. Open [http://127.0.0.1:5000/](http://127.0.0.1:5000/) in a web browser
 
-## Flask tutorial
-This is the [tutorial](http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) to get started/use as a reference for Flask apps.
+## Notes
+
+### The database
+* Log into mysql with user root password root: `mysql -u root -p`
+* Create the database: `create database no_reservations`
+
+Other actions:
+* Use the database: `use no_reservations`
+* Create a table: `create table table_name`
+* Drop (delete) the database: `drop database no_reservations`
+* Drop a table: `drop table table_name`
+
+### Running python scripts
+* \*nix OSes: `./run.py`
+* Windows: `venv\scripts\python run.py`
+
+### Flask tutorial
+This is a [tutorial](http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) to get started/use as a reference for Flask apps.
