@@ -6,35 +6,37 @@
         <h1>Search the Collection</h1>
     </div>
 
+    {% if error %}
     <div class="alert alert-dismissable alert-danger">
         <button type="button" class="close" data-dismiss="alert">×</button>
         <h4>Error</h4>
         <p>Bad search: <a href="#" class="alert-link">you must complete at least one field</a>.</p>
     </div>
+    {% endif %}
 
     <div class="well">
-        <form class="form-horizontal">
+        <form class="form-horizontal" action="/search" method="post">
           <fieldset>
             <legend>Complete at least 1 field</legend>
 
             <div class="form-group">
               <label for="inputTitle" class="col-lg-2 control-label">Title</label>
               <div class="col-lg-10">
-                <input class="form-control" id="inputTitle" placeholder="e.g. The Stranger" type="text">
+                <input class="form-control" name="title" id="inputTitle" placeholder="e.g. The Stranger" type="text">
               </div>
             </div>
 
             <div class="form-group">
               <label for="inputAuthor" class="col-lg-2 control-label">Author(s)</label>
               <div class="col-lg-10">
-                <input class="form-control" id="inputAuthor" placeholder="e.g. Albert Camus" type="password">
+                <input class="form-control" name="author" id="inputAuthor" placeholder="e.g. Albert Camus" type="text">
               </div>
             </div>
 
             <div class="form-group">
               <label for="inputSubject" class="col-lg-2 control-label">Subject(s)</label>
               <div class="col-lg-10">
-                <input class="form-control" id="inputSubject" placeholder="e.g. Fiction, Existentialism" type="text">
+                <input class="form-control" name="subject" id="inputSubject" placeholder="e.g. Fiction, Existentialism" type="text">
               </div>
             </div>
 
@@ -43,7 +45,7 @@
               <div class="col-lg-10">
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox"> Available
+                    <input type="checkbox" name="available"> Available
                   </label>
                 </div>
               </div>
