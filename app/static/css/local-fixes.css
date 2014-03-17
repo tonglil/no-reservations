@@ -1,5 +1,5 @@
 body {
-  padding-top: 50px;
+  padding-top: 60px;
 }
 /*
  *Cover
@@ -21,4 +21,12 @@ body {
 .jumbotron {
     background: rgba(255, 255, 255, 0.95);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.navbar-brand.active {
+    background-color: #1A242F;
+}
+.navbar-brand.active:hover {
+    color: #FFFFFF;
+    background-color: #1A242F;
 }

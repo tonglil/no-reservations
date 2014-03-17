@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="page-header">
+                <h1>Search the Collection</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="alert alert-dismissable alert-warning">
+              <button type="button" class="close" data-dismiss="alert">×</button>
+              <h4>Error</h4>
+              <p>Best check yo self, you're not looking too good. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, <a href="#" class="alert-link">vel scelerisque nisl consectetur et</a>.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="well">
+                <form class="form-horizontal">
+                  <fieldset>
+                    <legend>Complete at least 1 field</legend>
+                    <div class="form-group">
+                      <label for="inputTitle" class="col-lg-2 control-label">Item Title</label>
+                      <div class="col-lg-10">
+                        <input class="form-control" id="inputTitle" placeholder="e.g. The Stranger" type="text">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputAuthor" class="col-lg-2 control-label">Item Author(s)</label>
+                      <div class="col-lg-10">
+                        <input class="form-control" id="inputAuthor" placeholder="e.g. Albert Camus" type="password">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputSubject" class="col-lg-2 control-label">Item Subject(s)</label>
+                      <div class="col-lg-10">
+                        <input class="form-control" id="inputSubject" placeholder="e.g. Fiction, Existentialism" type="text">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="inputAvailable" class="col-lg-2 control-label">Item Available</label>
+                      <div class="col-lg-10">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox"> Available
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-lg-10 col-lg-offset-2">
+                        <button type="submit" class="btn btn-success">Search</button>
+                        <button class="btn btn-default">Cancel</button>
+                      </div>
+                    </div>
+                  </fieldset>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="results">
+                <table class="table table-striped table-hover ">
+                  <thead>
+                    <tr class="info">
+                      <th>#</th>
+                      <th>Column heading</th>
+                      <th>Column heading</th>
+                      <th>Column heading</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                    </tr>
+                    <tr class="warning">
+                      <td>3</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                    </tr>
+                    <tr>
+                      <td>4</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                    </tr>
+                    <tr>
+                      <td>5</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                      <td>Column content</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    $(document).ready(function () {
+        $('li.search').addClass('active');
+    });
+    </script>
+{% endblock %}
