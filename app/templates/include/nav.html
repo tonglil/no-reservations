@@ -1,0 +1,50 @@
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">No Reservations</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="search"><a href="/search">Search Collection</a></li>
+                {% if user %} {#% if user.getType == Borrower %#}
+                <li class="borrower dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Borrower <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/borrower/{{user}}">Account Information</a></li>
+                    <li><a href="/borrower/{{user}}/fines">Pay Fines</a></li>
+                </ul>
+                </li>
+                {% endif %}
+                {% if user %} {#% if user.getType == Clerk %#}
+                <li class="clerk dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clerk <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/borrower/new">Add Borrowers</a></li>
+                    <li><a href="/checkout">Checkout Items</a></li>
+                    <li><a href="/returns">Process Returns</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/report/overdue">Report: Overdue Items</a></li>
+                </ul>
+                </li>
+                {% endif %}
+                {% if user %} {#% if user.getType == Librarian %#}
+                <li class="librarian dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Librarian <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/item/new">Add Items Or Copies</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/report/checkedout">Report: Checked Out Items</a></li>
+                    <li><a href="/report/popular">Report: Popular Items</a></li>
+                </ul>
+                </li>
+                {% endif %}
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</div>

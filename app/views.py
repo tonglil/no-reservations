@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request, flash, Markup
 from app import app
 
 user = 12
@@ -12,19 +12,37 @@ def index():
                            )
 
 
-@app.route('/search', methods=['GET'])
-def search():
-    return render_template('search.html',
-                           title='Search',
-                           user=user
-                           )
-
-
-@app.route('/search', methods=['POST'])
+@app.route('/search', methods=['POST', 'GET'])
 def results():
-    return render_template('results.html',
-                           title='Search Results',
-                           user=user
+    results = None
+
+    if request.method == 'POST':
+        title = 'Search Results'
+        print request.form
+
+        message = Markup('''You have <a href="#overdue"
+                        class="alert-link">overdue</a> items.''')
+        flash(message, 'warning')
+        message = Markup('''You have <a href="#outstanding"
+                        class="alert-link">outstanding</a> fines.''')
+        flash(message, 'warning')
+
+        message = 'Item returned and processed.'
+        flash(message, 'message')
+        message = Markup('You have <a href="#overdue" class="alert-link">overdue</a> items.')
+        flash(message, 'message')
+    else:
+        title = 'Search'
+
+        message = 'Unable to add a new borrower.'
+        flash(message, 'error')
+        message = 'Another error.'
+        flash(message, 'error')
+
+    return render_template('search.html',
+                           title=title,
+                           user=user,
+                           results=results
                            )
 
 
@@ -58,12 +76,23 @@ def itemNew():
 
 
 
-@app.route('/borrower/new')
+@app.route('/borrower/new', methods=['POST', 'GET'])
 def borrowerNew():
+    results = None
+
+    if request.method == 'POST':
+        title = 'Search Results'
+        print request.form
+    else:
+        title = 'Search'
+
     return render_template('borrower/new.html',
                            title='New Borrower Account',
-                           user=user
+                           user=user,
+                           results=results
                            )
+
+
 #@app.route('/borrower/add')
 @app.route('/borrower/<int:borrower_id>')
 def borrowerAccount(borrower_id):
