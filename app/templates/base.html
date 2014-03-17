@@ -23,26 +23,24 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/">No Reservations</a>
-          <!--<li class="active"><a class="navbar-brand" href="/">No Reservations</a></li>-->
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <!--<li class="active"><a href="/">Home</a></li>-->
             <li class="search"><a href="/search">Search Collection</a></li>
             {% if user %} {#% if user.getType == Borrower %#}
-            <li class="dropdown">
+            <li class="borrower dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Borrower <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="/user/{{user}}">Check Account</a></li>
-                <li><a href="/user/{{user}}/fines">Pay Fines</a></li>
+                <li><a href="/borrower/{{user}}">Account Information</a></li>
+                <li><a href="/borrower/{{user}}/fines">Pay Fines</a></li>
               </ul>
             </li>
             {% endif %}
             {% if user %} {#% if user.getType == Clerk %#}
-            <li class="dropdown">
+            <li class="clerk dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clerk <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="/user/new">Add Borrowers</a></li>
+                <li><a href="/borrower/new">Add Borrowers</a></li>
                 <li><a href="/checkout">Checkout Items</a></li>
                 <li><a href="/returns">Process Returns</a></li>
                 <li class="divider"></li>
@@ -51,7 +49,7 @@
             </li>
             {% endif %}
             {% if user %} {#% if user.getType == Librarian %#}
-            <li class="dropdown">
+            <li class="librarian dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Librarian <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="/item/new">Add Items Or Copies</a></li>

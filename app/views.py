@@ -1,7 +1,7 @@
 from flask import render_template
 from app import app
 
-user = 'hi'
+user = 12
 #user = None
 
 
@@ -48,10 +48,20 @@ def results():
 
 
 
-#@app.route('/user/new')
-#@app.route('/user/add')
-#@app.route('/user/:user')
-#@app.route('/user/:user/fines')
+@app.route('/borrower/new')
+def borrowerNewAccount():
+    return render_template('borrower/new.html',
+                           title='New Borrower Account',
+                           user=user
+                           )
+#@app.route('/borrower/add')
+@app.route('/borrower/<int:borrower_id>')
+def borrowerGetAccount(borrower_id):
+    return render_template('borrower/account.html',
+                           title='Account Information',
+                           user=user
+                           )
+#@app.route('/borrower/:borrower/fines')
 
 
 
