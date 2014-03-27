@@ -24,7 +24,7 @@ class Borrower(db.Model):
 
 
 # Borrower *:1 BorrowerType
-#TODO: set time limit to something fluid, or a chunk
+#TODO: set time limit to something fluid, or a 'diff' type
 class BorrowerType(db.Model):
     type = db.Column(db.String(255), primary_key=True)
     bookTimeLimit = db.Column(db.Interval)
@@ -36,30 +36,9 @@ class BorrowerType(db.Model):
         self.bookTimeLimit = time
 
 
-# Join table for the Book:Author relationship
-HasAuthor = db.Table('has_author',
-                     db.Column('callNumber', db.String(50),
-                               db.ForeignKey('book.callNumber'),
-                               primary_key=True),
-                     db.Column('name', db.String(255),
-                               db.ForeignKey('author.name'),
-                               primary_key=True)
-                     )
-
-
-# Join table for the Book:Subject relationship
-HasSubject = db.Table('has_subject',
-                      db.Column('callNumber', db.String(50),
-                                db.ForeignKey('book.callNumber'),
-                                primary_key=True),
-                      db.Column('subject', db.String(255),
-                                db.ForeignKey('subject.subName'),
-                                primary_key=True)
-                      )
-
-
-# Book *:* Author
-# Book *:* Subject
+# TODO: double check the doc to see if author/subject relation makes sense:
+# Author *:1 Book
+# Subject *:1 Book
 # BookCopy *:1 Book
 # HoldRequest *:1 Book
 class Book(db.Model):
@@ -69,27 +48,27 @@ class Book(db.Model):
     mainAuthor = db.Column(db.String(255))
     publisher = db.Column(db.String(255))
     year = db.Column(db.String(4))
-    authors = db.relationship('Author', secondary=HasAuthor,
-                              backref=db.backref('book', lazy='dynamic'))
-    subjects = db.relationship('Subject', secondary=HasSubject,
-                               backref=db.backref('book', lazy='dynamic'))
+    authors = db.relationship('HasAuthor', backref='book', lazy='dynamic')
+    subjects = db.relationship('HasSubject', backref='book', lazy='dynamic')
     copies = db.relationship('BookCopy', backref='book', lazy='dynamic')
     holdRequests = db.relationship('HoldRequest', backref='book',
                                    lazy='dynamic')
 
 
-# Book *:* Author
-class Author(db.Model):
+# TODO: double check this doc to see if relation makes sense:
+# Author *:1 Book
+class HasAuthor(db.Model):
+    callNumber = db.Column(db.String(50), db.ForeignKey('book.callNumber'),
+                           primary_key=True)
     name = db.Column(db.String(255), primary_key=True)
-    books = db.relationship('Book', secondary=HasAuthor,
-                            backref=db.backref('author', lazy='dynamic'))
 
 
-# Book *:* Subject
-class Subject(db.Model):
-    subName = db.Column(db.String(255), primary_key=True)
-    books = db.relationship('Book', secondary=HasSubject,
-                            backref=db.backref('subName', lazy='dynamic'))
+# TODO: double check this doc to see if relation makes sense:
+# Subject *:1 Book
+class HasSubject(db.Model):
+    callNumber = db.Column(db.String(50), db.ForeignKey('book.callNumber'),
+                           primary_key=True)
+    subject = db.Column(db.String(255), primary_key=True)
 
 
 # Represents the BorrowableCopy/ItemCopy entity in the document
