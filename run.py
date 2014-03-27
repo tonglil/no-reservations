@@ -1,4 +1,7 @@
 #!venv/bin/python
 
 from app import app
-app.run(debug = True)
+from app import db
+
+db.create_all()
+app.run(debug=True)

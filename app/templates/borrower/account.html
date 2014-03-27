@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Your Account</h1>
+    </div>
+
+    <div class="alert alert-dismissable alert-warning">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>Notice</h4>
+        <p>You have <a href="#overdue" class="alert-link">overdue</a> items.</p>
+        <p>You have <a href="#fines" class="alert-link">outstanding</a> fines.</p>
+    </div>
+
+    <div class="alert alert-dismissable alert-info">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>Info</h4>
+        <p>Your <a href="#holds" class="alert-link">hold requests</a> are ready.</p>
+    </div>
+
+    <div class="page-header">
+        <h2>Personal Information</h2>
+        <p>Your personal information.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                <colgroup>
+                  <col class="col-xs-4">
+                  <col class="col-xs-8">
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <td>
+                        Name
+                    </td>
+                    <td>
+                        Name
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                        Borrower ID
+                    </td>
+                    <td>
+                        The ID
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                        Email
+                    </td>
+                    <td>
+                        email@email.com
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                        Password
+                    </td>
+                    <td>
+                        ********
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                <colgroup>
+                  <col class="col-xs-4">
+                  <col class="col-xs-8">
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <td>
+                        Membership Expiry Date
+                    </td>
+                    <td>
+                        01-01-2015
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                        Mailing Address
+                    </td>
+                    <td>
+                        123 Some St. Vancouver, BC, A1B 2C3
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                        Phone Number
+                    </td>
+                    <td>
+                        555-555-5555
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                        Sin or Student Number
+                    </td>
+                    <td>
+                        ********
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-header">
+        <h2>Library Information</h2>
+        <p>Information on your items.</p>
+    </div>
+
+    <ul id="myTabs" class="nav nav-tabs nav-justified" style="margin-bottom: 15px;">
+        <li class="active"><a href="#checkedout" data-toggle="tab">Borrowed Items</a></li>
+        <li class=""><a href="#overdue" data-toggle="tab">Overdue</a></li>
+        <li class=""><a href="#holds" data-toggle="tab">Hold Requests</a></li>
+        <li class=""><a href="#fines" data-toggle="tab">Fines</a></li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+      <div class="tab-pane fade active in" id="checkedout">
+        <p>You have checked out these items:</p>
+        <table class="table table-striped table-hover table-bordered">
+          <thead>
+            <tr class="success">
+              <th>#</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-pane fade" id="overdue">
+        <p>These items are overdue, please return them to the library:</p>
+        <table class="table table-striped table-hover table-bordered">
+          <thead>
+            <tr class="success">
+              <th>#</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-pane fade" id="holds">
+        <p>You have requested these items to be held:</p>
+        <table class="table table-striped table-hover table-bordered">
+          <thead>
+            <tr class="success">
+              <th>#</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-pane fade" id="fines">
+        <p>Please pay the following fines:</p>
+        <table class="table table-striped table-hover table-bordered">
+          <thead>
+            <tr class="success">
+              <th>#</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    $(document).ready(function () {
+        $('li.borrower').addClass('active');
+        $('.alert-link').click(function(e) {
+            $('#myTabs a[href="' + $(this).attr('href') + '"]').tab('show');
+        });
+    });
+    </script>
+{% endblock %}

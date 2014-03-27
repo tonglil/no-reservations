@@ -5,6 +5,7 @@ Flask-SQLAlchemy==1.0
 Flask-WTF==0.9.4
 Jinja2==2.7.2
 MarkupSafe==0.19
+MySQL-python==1.2.5
 SQLAlchemy==0.9.3
 Tempita==0.5.2
 WTForms==1.0.5

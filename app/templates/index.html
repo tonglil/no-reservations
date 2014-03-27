@@ -1,7 +1,48 @@
 {% extends 'base.html' %}
-{% block content %}
-<h1>Hi, {{user.nickname}}!</h1>
-{% for post in posts %}
-<div><p>{{post.author.nickname}} says: <b>{{post.body}}</b></p></div>
-{% endfor %}
+
+{% block cover %}
+<div class="site-wrapper">
+    <div class="container">
+        <div class="inner cover">
+            <div class="jumbotron">
+                <h1 class="cover-heading">No Reservations</h1>
+                <p class="lead">The simple library system.</p>
+                <p class="lead">Featuring Stripe payment integration.</p>
+                <!--<p class="lead">-->
+                    <!--<a href="#" class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a>-->
+                <!--</p>-->
+            </div>
+        </div>
+    </div><!-- /.container -->
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Borrowers</h2>
+            <p>Search for items, place hold requests, check your account, and pay overdue fines online!</p>
+            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+
+        <div class="col-md-4">
+            <h2>Clerks</h2>
+            <p>Maintain borrower information, check out items, process returns, and see a list of overdue items online!</p>
+            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+
+        <div class="col-md-4">
+            <h2>Librarians</h2>
+            <p>Add new items to the collection, see a list of checked out items or the most popular items of a year online!</p>
+            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+    </div>
+</div><!-- /container -->
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    $(document).ready(function () {
+        $('.navbar-brand').addClass('active');
+    });
+    </script>
 {% endblock %}

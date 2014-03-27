@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Search the Collection</h1>
+    </div>
+
+    {{ flash() }}
+    {% if error %}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>Error</h4>
+        <p>Bad search: <a href="#" class="alert-link">you must complete at least one field</a>.</p>
+    </div>
+    {% endif %}
+
+    <div class="well">
+        <form class="form-horizontal" action="/search" method="post">
+          <fieldset>
+            <legend>Complete at least 1 field</legend>
+
+            <div class="form-group">
+              <label for="inputTitle" class="col-lg-2 control-label">Title</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="title" id="inputTitle" placeholder="e.g. The Stranger" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputAuthor" class="col-lg-2 control-label">Author(s)</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="author" id="inputAuthor" placeholder="e.g. Albert Camus" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputSubject" class="col-lg-2 control-label">Subject(s)</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="subject" id="inputSubject" placeholder="e.g. Fiction, Existentialism" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputAvailable" class="col-lg-2 control-label">Is Available</label>
+              <div class="col-lg-10">
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="available"> Available
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-lg-10 col-lg-offset-2">
+                <button type="submit" class="btn btn-success">Search</button>
+                <button class="btn btn-default">Cancel</button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+    </div>
+
+    <div class="results">
+        <div class="page-header">
+            <h2>Search Results</h2>
+        </div>
+
+        <table class="table table-striped table-hover table-bordered">
+          <thead>
+            <tr class="success">
+              <th>#</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr class="warning">
+              <td>3</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    $(document).ready(function () {
+        $('li.search').addClass('active');
+    });
+    </script>
+{% endblock %}

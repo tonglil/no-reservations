@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Add a New Item or Copy</h1>
+    </div>
+
+    {{ flash() }}
+    <div class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <h4>Error</h4>
+        <p>Unable to add new item: <a href="#" class="alert-link">err</a>.</p>
+    </div>
+
+    <div class="alert alert-dismissable alert-success">
+          <button type="button" class="close" data-dismiss="alert">×</button>
+          <h4>Success</h4>
+          <p>Item returned and processed!</p>
+    </div>
+
+    <div class="well">
+        <form class="form-horizontal">
+          <fieldset>
+            <legend>Complete all fields</legend>
+
+            <div class="form-group">
+              <label for="inputTitle" class="col-lg-2 control-label">Title</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="title" id="inputTitle" placeholder="e.g. Introduction to Algorithms" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputAuthor" class="col-lg-2 control-label">Main Author</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="author" id="inputAuthor" placeholder="e.g. Thomas H. Cormen" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputAuthorOthers" class="col-lg-2 control-label">Other Authors</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="authorOthers" id="inputAuthorOthers" placeholder="e.g. Charles E. Leiserson, Ronald L. Rivest, Clifford Stein" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputPublisher" class="col-lg-2 control-label">Publisher</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="publisher" id="inputPublisher" placeholder="e.g. MIT Press" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputYear" class="col-lg-2 control-label">Year Published</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="year" id="inputYear" placeholder="e.g. 1990" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputSubject" class="col-lg-2 control-label">Subject(s)</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="subjects" id="inputSubjects" placeholder="e.g. data structures, algorithms" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputCallNumber" class="col-lg-2 control-label">Call Number</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="callNumber" id="inputCallNumber" placeholder="e.g. QA 766 I5858 2009" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputIsbn" class="col-lg-2 control-label">13-Digit ISBN</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="isbn" id="inputIsbn" placeholder="e.g. 978-0-262-03384-8" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-lg-10 col-lg-offset-2">
+                <button type="submit" class="btn btn-success">Search</button>
+                <button class="btn btn-default">Cancel</button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    $(document).ready(function () {
+        $('li.librarian').addClass('active');
+    });
+    </script>
+{% endblock %}
