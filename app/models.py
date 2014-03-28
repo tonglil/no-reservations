@@ -106,7 +106,7 @@ class Borrowing(db.Model):
     bid = db.Column(db.Integer, db.ForeignKey('borrower.bid'), nullable=False)
     callNumber = db.Column(db.String(50), nullable=False)
     copyNo = db.Column(db.String(10), nullable=False)
-    outDate = db.Column(db.DateTime)
+    outDate = db.Column(db.DateTime, default=datetime.now())
     inDate = db.Column(db.DateTime)
     __table_args__ = (ForeignKeyConstraint([callNumber, copyNo],
                                            [BookCopy.callNumber,
@@ -114,18 +114,13 @@ class Borrowing(db.Model):
                       {})
     fines = db.relationship('Fine', backref='borrowing', lazy='dynamic')
 
-    def __init__(self):
-        self.outDate = datetime.now
-
 
 # Fines *:1 Borrowing
 class Fine(db.Model):
     fid = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Numeric(12, 2))
-    issuedDate = db.Column(db.DateTime)
+    issuedDate = db.Column(db.DateTime, default=datetime.now())
     paidDate = db.Column(db.DateTime)
     borid = db.Column(db.Integer, db.ForeignKey('borrowing.borid'),
                       nullable=False)
 
-    def __init__(self):
-        self.issuedDate = datetime.now
