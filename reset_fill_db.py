@@ -51,6 +51,12 @@ db.session.add(book_b)
 hasauthor_a = models.HasAuthor(callNumber=book_a.callNumber, name="the other guy")
 db.session.add(hasauthor_a)
 
+hasauthor_a2 = models.HasAuthor(callNumber=book_a.callNumber, name="the second guy")
+db.session.add(hasauthor_a2)
+
+hasauthor_a3 = models.HasAuthor(callNumber=book_a.callNumber, name="elmo")
+db.session.add(hasauthor_a3)
+
 hasauthor_b = models.HasAuthor(callNumber=book_b.callNumber, name="bill nye the science guy")
 db.session.add(hasauthor_b)
 
@@ -59,6 +65,9 @@ db.session.add(hasauthor_b)
 ##############################################
 hassubject_a = models.HasSubject(callNumber=book_a.callNumber, subject="history")
 db.session.add(hassubject_a)
+
+hassubject_a2 = models.HasSubject(callNumber=book_a.callNumber, subject="story")
+db.session.add(hassubject_a2)
 
 ##############################################
 #book_copy
