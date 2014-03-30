@@ -104,6 +104,42 @@ def results():
 
 @app.route('/checkout')
 def checkout():
+    qbid = request.form['borrowerId']
+    qcallNumber = request.form['callNumber']
+    qcopyNo = request.form['copyNo']
+    
+    if qbid == "" or qcallNumber == "" or qcopyNo == "":
+        message = Markup('Please fill in all fields.')
+        flash(message, 'warning')
+    else:
+        query = """select 
+                    from borrower
+                    where bid='{}'""".format(borrowerID)
+        qresult = db.engine.execute(query).first()
+        if len(qresult) == 0:
+            message = Markup('Borrower does not exist.')
+            flash(message, 'warning')
+        else:
+            query = """select status
+                        from book_copy as bc
+                        where bc.callNumber ='{0}' and 
+                        bc.copyNo='{1}'""".format(qcallNumber,qcopyNo)
+            qresult = db.engine.execute(query).first()
+            if qresult == "on-hold":
+                message = Markup('Copy is on hold.')
+                flash(message, 'warning')
+            elif qresult == "out":
+                message = Markup('Copy has been taken out.')
+                flash(message, 'warning')
+            else:
+                query = """update book_copy
+                            set status='out'
+                            where callNumber='{0}' and
+                            copyNo='{1}'""".format(qcallNumber,qcopyNo)
+                qresult = db.engine.execute(query)
+                #query = """
+            
+            
     return render_template('admin/checkout.html',
                            title='Checkout Items',
                            user=user
@@ -152,21 +188,23 @@ def borrowerNew():
         qexpiryDate = datetime.datetime.now() + datetime.timedelta(days=365)
         
         if qname == "" or qemail == "" or qpassword == "" or qpasswordConfirm == "" or qaddress == "" or qphoneNumber == "" or qsinOrSid == "" or qtype == "":
-            err = True
+            message = Markup('All fields must be completed.')
+            flash(message, 'warning')
         else:
             query = """select distinct b.sinOrStNo
-                        from borrower as b"""
+                        from borrower as b
+                        where b.sinOrstNo='{}'""".format(qsinOrSid)
             qresults = db.engine.execute(query).fetchall()
             if len(qresults) > 0:
                 message = Markup('This SIN or Student Number already exists')
                 flash(message, 'warning')
-            if qpassword != qpasswordConfirm:
+            elif qpassword != qpasswordConfirm:
                 message = Markup('Make sure both passwords match')
                 flash(message, 'warning')
             else:
                 query = """insert into borrower(password, name, address, phone, emailAddress, sinOrStNo, expiryDate, type)
                         values"""
-                query += "('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}')".format(qpassword,qname,qaddress,qphoneNumber,qemail, qsinOrSID, qexipryDate, qtype)
+                query += "('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}'  )".format(qpassword,qname,qaddress,qphoneNumber,qemail, qsinOrSid, qexpiryDate, qtype)
                 qresult = db.engine.execute(query)
     else:
         title = 'New Borrower Account'

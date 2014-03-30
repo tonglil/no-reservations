@@ -7,13 +7,6 @@
     </div>
 
     {{ flash() }}
-    {% if error %}
-    <div class="alert alert-dismissable alert-danger">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        <h4>Error</h4>
-        <p>Something bad occurred when you tried to add a new borrower: <a href="#" class="alert-link">err</a>.</p>
-    </div>
-    {% endif %}
 
     <div class="well">
         <form class="form-horizontal" action="/borrower/new" method="post">
