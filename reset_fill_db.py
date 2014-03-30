@@ -72,7 +72,7 @@ db.session.add(hassubject_a2)
 ##############################################
 #book_copy
 ##############################################
-bookcopy_aa = models.BookCopy(callNumber=book_a.callNumber, copyNo="1", status="in")
+bookcopy_aa = models.BookCopy(callNumber=book_a.callNumber, copyNo="1", status="out")
 db.session.add(bookcopy_aa)
 
 bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber, copyNo="2", status="in")
@@ -84,7 +84,7 @@ db.session.add(bookcopy_ba)
 ##############################################
 #hold_request
 ##############################################
-holdrequest_a = models.HoldRequest(hid=11, bid=borrower_b.bid, callNumber=book_b.callNumber, issuedDate=datetime.datetime.now())
+holdrequest_a = models.HoldRequest(hid=11, bid=borrower_b.bid, callNumber=book_b.callNumber)
 db.session.add(holdrequest_a)
 
 ##############################################
