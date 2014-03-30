@@ -1,8 +1,8 @@
 from flask import render_template, request, flash, Markup
-from app import app, db, models
+from app import app, db
 import datetime
 
-user = 12
+user = 111
 
 
 @app.route('/')
@@ -16,17 +16,19 @@ def index():
 @app.route('/search', methods=['POST', 'GET'])
 def results():
     results = None
-    err = False
     if request.method == 'POST':
         title = 'Search Results'
-        
-        #TODO: search parameters should stay in text boxes after post because it is more user friendly
+
+        #TODO: search parameters should stay in text boxes after post because
+        #it is more user friendly
+        #TODO: tony: I can do that from the client side?
         qtitle = request.form['title']
         qsubject = request.form['subject']
         qauthor = request.form['author']
 
         if qtitle == "" and qsubject == "" and qauthor == "":
-            err = True
+            message = Markup('Bad search: <a href="#" class="alert-link">you must complete at least one field</a>.')
+            flash(message, 'error')
         else:
             query = """select distinct b.callNumber
                         from book as b, has_subject as s, has_author as a
@@ -34,21 +36,24 @@ def results():
             if qtitle != "":
                 query += "b.title like '%%{}%%' and ".format(qtitle)
             if qsubject != "":
-                query += "b.callNumber=s.callNumber and s.subject like '%%{}%%' and ".format(qsubject)
+                query += """b.callNumber=s.callNumber and s.subject like
+                '%%{}%%' and """.format(qsubject)
             if qauthor != "":
                 query += "(b.mainAuthor like '%%{}%%' or ".format(qauthor)
-                query += "(b.callNumber=a.callNumber and a.name like '%%{}%%')) and ".format(qauthor)
+                query += """(b.callNumber=a.callNumber and a.name like
+                '%%{}%%')) and """.format(qauthor)
             query = query[0:-4]
-    #        return query
 
             qresults = db.engine.execute(query).fetchall()
-         
+
             if len(qresults) == 0:
-                message = Markup('No items in the collection match the search parameters.')
+                message = Markup('''No items in the collection match the search
+                                 parameters.''')
                 flash(message, 'warning')
             else:
                 results = []
-                #TODO: test this with lots of subjects and authors, see if the tables look okay
+                #TODO: test this with lots of subjects and authors, see if the
+                #tables look okay
                 for callNumber in qresults:
                     result = {}
 
@@ -61,7 +66,7 @@ def results():
                     result['title'] = qresult.title
                     result['mainAuthor'] = qresult.mainAuthor
                     result['year'] = qresult.year
-                    
+
                     query = """select name
                                 from has_author
                                 where callNumber='{}'""".format(callNumber)
@@ -70,7 +75,7 @@ def results():
                     for r in qresult:
                         result['authors'] += str(r[0]) + ', '
                     result['authors'] = result['authors'][0:-2]
-                    
+
                     query = """select subject
                                 from has_subject
                                 where callNumber='{}'""".format(callNumber)
@@ -79,7 +84,7 @@ def results():
                     for r in qresult:
                         result['subjects'] += str(r[0]) + ', '
                     result['subjects'] = result['subjects'][0:-2]
-                    
+
                     query = """select status
                                 from book_copy
                                 where callNumber='{}'""".format(callNumber)
@@ -97,8 +102,7 @@ def results():
     return render_template('search.html',
                            title=title,
                            user=user,
-                           results=results,
-                           error=err
+                           results=results
                            )
 
 
@@ -154,7 +158,6 @@ def returns():
                            )
 
 
-
 @app.route('/item/new')
 def itemNew():
     return render_template('admin/new.html',
@@ -167,7 +170,6 @@ def itemNew():
 #@app.route('/item/:item/return')
 
 
-
 @app.route('/borrower/new', methods=['POST', 'GET'])
 def borrowerNew():
     results = None
@@ -176,7 +178,7 @@ def borrowerNew():
     if request.method == 'POST':
         title = 'New Borrower Account'
         #print request.form
-        
+
         qname = request.form['name']
         qemail = request.form['email']
         qpassword = request.form['password']
@@ -186,8 +188,17 @@ def borrowerNew():
         qsinOrSid = request.form['sinOrSid']
         qtype = request.form['type']
         qexpiryDate = datetime.datetime.now() + datetime.timedelta(days=365)
-        
-        if qname == "" or qemail == "" or qpassword == "" or qpasswordConfirm == "" or qaddress == "" or qphoneNumber == "" or qsinOrSid == "" or qtype == "":
+
+        if (
+            qname == "" or
+            qemail == "" or
+            qpassword == "" or
+            qpasswordConfirm == "" or
+            qaddress == "" or
+            qphoneNumber == "" or
+            qsinOrSid == "" or
+            qtype == ""
+        ):
             message = Markup('All fields must be completed.')
             flash(message, 'warning')
         else:
@@ -196,15 +207,24 @@ def borrowerNew():
                         where b.sinOrstNo='{}'""".format(qsinOrSid)
             qresults = db.engine.execute(query).fetchall()
             if len(qresults) > 0:
-                message = Markup('This SIN or Student Number already exists')
+                message = Markup('This SIN or student number already exists')
                 flash(message, 'warning')
             elif qpassword != qpasswordConfirm:
                 message = Markup('Make sure both passwords match')
                 flash(message, 'warning')
             else:
-                query = """insert into borrower(password, name, address, phone, emailAddress, sinOrStNo, expiryDate, type)
-                        values"""
-                query += "('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}'  )".format(qpassword,qname,qaddress,qphoneNumber,qemail, qsinOrSid, qexpiryDate, qtype)
+                query = """insert into borrower(password, name, address, phone,
+                emailAddress, sinOrStNo, expiryDate, type) values"""
+                query += """('
+                {0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}
+                ')""".format(qpassword,
+                             qname,
+                             qaddress,
+                             qphoneNumber,
+                             qemail,
+                             qsinOrSid,
+                             qexpiryDate,
+                             qtype)
                 qresult = db.engine.execute(query)
     else:
         title = 'New Borrower Account'
@@ -219,13 +239,131 @@ def borrowerNew():
 #@app.route('/borrower/add')
 @app.route('/borrower/<int:borrower_id>')
 def borrowerAccount(borrower_id):
+    overdue = 0
+    borrowerInfo = None
+    borrowedItems = None
+    fines = []
+    holdRequests = None
+    query = """select *
+                from borrower
+                where bid='{}'""".format(borrower_id)
+    qresults = db.engine.execute(query).first()
+    if qresults is None:
+        message = Markup('No borrower exists with this borrower_id.')
+        flash(message, 'error')
+    else:
+        borrowerInfo = qresults
+
+        borrowedItems = []
+        query = """select borid, c.callNumber as cn, title, mainAuthor, outDate
+                    from borrowing as b, book as c
+                    where b.callNumber=c.callNumber
+                    and bid='{}'
+                    and inDate is NULL""".format(borrower_id)
+        qresults = db.engine.execute(query).fetchall()
+        typeQuery = """select bookTimeLimit
+                        from borrower as b, borrower_type as t
+                        where bid='{}' and b.type=t.type""".format(borrower_id)
+        timeLimit = db.engine.execute(typeQuery).first()
+        for result in qresults:
+            borrowedItem = {}
+            borrowedItem['borid'] = result.borid
+            borrowedItem['callNumber'] = result.cn
+            borrowedItem['title'] = result.title
+            borrowedItem['mainAuthor'] = result.mainAuthor
+            borrowedItem['outDate'] = result.outDate
+            borrowedItem['expiryDate'] = (result.outDate +
+                                          (timeLimit.bookTimeLimit -
+                                           datetime.datetime(year=1970,
+                                                             month=1,
+                                                             day=1)
+                                           )
+                                          )
+            if borrowedItem['expiryDate'] > datetime.datetime.now():
+                borrowedItem['expired'] = False
+            else:
+                borrowedItem['expired'] = True
+                overdue += 1
+            borrowedItems.append(borrowedItem)
+        if overdue > 0:
+            message = Markup('''You have <a href="#overdue"
+                             class="alert-link">{} overdue</a>
+                             item(s).'''.format(overdue))
+            flash(message, 'warning')
+
+        query = """select hid, h.callNumber, title, issuedDate from
+        hold_request as h, book as b where bid='{}' and
+        b.callNumber=h.callNumber""".format(borrower_id)
+        qresults = db.engine.execute(query).fetchall()
+        holdRequests = []
+        for result in qresults:
+            hr = {}
+            hr['hid'] = result.hid
+            hr['callNumber'] = result.callNumber
+            hr['title'] = result.title
+            hr['issuedDate'] = result.issuedDate
+            holdRequests.append(hr)
+
+        query = """select fid, amount, issuedDate
+                    from fine as f, borrowing as b
+                    where f.borid=b.borid and b.bid='{}'
+                    and paidDate is NULL""".format(borrower_id)
+        qresults = db.engine.execute(query).fetchall()
+        if len(qresults) > 0:
+            message = Markup('''You have <a href="#fines"
+                             class="alert-link">outstanding</a> fines.''')
+            flash(message, 'warning')
+            for result in qresults:
+                fine = {}
+                fine['fid'] = result.fid
+                fine['amount'] = result.amount
+                fine['issuedDate'] = result.issuedDate
+                fines.append(fine)
+
     return render_template('borrower/account.html',
                            title='Account Information',
-                           user=user
+                           user=user,
+                           borrower=borrowerInfo,
+                           borrowedItems=borrowedItems,
+                           holdRequests=holdRequests,
+                           fines=fines
                            )
-#@app.route('/borrower/:borrower/fines')
 
 
+@app.route('/borrower/<int:borrower_id>/fines', methods=['POST', 'GET'])
+def payFines(borrower_id):
+    if request.method == 'POST':
+        query = ""
+        for key in request.form:
+            query = """update fine
+                        set paidDate='{0}'
+                        where fid='{1}'""".format(datetime.datetime.now(), key)
+            break
+        db.engine.execute(query)
+        message = Markup('You have paid a fine.')
+        flash(message, 'warning')
+    fines = None
+    query = """select fid, amount, issuedDate
+                from fine as f, borrowing as b
+                where f.borid=b.borid and b.bid='{}'
+                and paidDate is NULL""".format(borrower_id)
+    qresults = db.engine.execute(query).fetchall()
+    if len(qresults) == 0:
+        message = Markup('You have no outstanding fines.')
+        flash(message, 'warning')
+    else:
+        fines = []
+        for result in qresults:
+            fine = {}
+            fine['fid'] = result.fid
+            fine['amount'] = result.amount
+            fine['issuedDate'] = result.issuedDate
+            fines.append(fine)
+    return render_template('borrower/fines.html',
+                           title='Pay Fines',
+                           user=user,
+                           fines=fines
+                           )
 
 ##overdue, checkedout, popular
 #@app.route('/report/:report')

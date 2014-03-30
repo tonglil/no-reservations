@@ -31,10 +31,6 @@ class BorrowerType(db.Model):
     borrowers = db.relationship('Borrower', backref='borrower_type',
                                 lazy='dynamic')
 
-    def __init__(self, type, time):
-        self.type = type
-        self.bookTimeLimit = time
-
 
 # TODO: double check the doc to see if author/subject relation makes sense:
 # Author *:1 Book
@@ -123,4 +119,3 @@ class Fine(db.Model):
     paidDate = db.Column(db.DateTime)
     borid = db.Column(db.Integer, db.ForeignKey('borrowing.borid'),
                       nullable=False)
-

@@ -7,7 +7,7 @@ This application requires the following to be installed:
 * pip
 * virtualenv: you can build natively or use pip: `sudo pip install virtualenv`
 
-## Getting started
+## Getting Started
 1. Clone repository:
     * `git clone ...`
     * `cd no-reservations/`
@@ -20,10 +20,10 @@ This application requires the following to be installed:
 1. Install dependencies: `pip install -r requirements.txt`
 1. Create the database in mysql for the first time
 
-## Running the app
+## Running the App
 1. Activate virtualenv
-1. Run `run.py` to create the database tables from the model definitions if they do not exist
-1. Run `run_reset_db.py` to automatically **drop** and create the database tables
+1. Run `scripts/reset_fill_db.py` to automatically **drop**, create, and fill the database tables with test data.
+1. Run `run.py` to start the server
 1. Open [http://127.0.0.1:5000/](http://127.0.0.1:5000/) in a web browser
 
 ## Notes
