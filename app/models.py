@@ -119,4 +119,3 @@ class Fine(db.Model):
     paidDate = db.Column(db.DateTime)
     borid = db.Column(db.Integer, db.ForeignKey('borrowing.borid'),
                       nullable=False)
-
