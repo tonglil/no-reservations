@@ -242,9 +242,14 @@ def returns():
                 query = """select emailAddress
                             from borrower
                             where bid='{}'""".format(qresult)
-                qresult = db.engine.execute(query).first()
-                #notify holdee by sending email to qresult
+                qresult = db.engine.execute(query).first() #contains email address of holdee
                 
+                query = """select *
+                            from book
+                            where callNumber='{0}' and
+                            copyNo='{1}'""".format(qcallNumber, qcopyNo)
+                qbook = db.engine.execute(query).fetchall() #contains book information of item on hold
+                #notify holdee by sending email
 
     return render_template('admin/returns.html',
                            title='Process Returns',
