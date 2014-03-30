@@ -85,7 +85,7 @@ db.session.add(bookcopy_ba)
 #hold_request
 ##############################################
 holdrequest_a = models.HoldRequest(hid=11, bid=borrower_b.bid, callNumber=book_b.callNumber)
-#db.session.add(holdrequest_a)
+db.session.add(holdrequest_a)
 
 ##############################################
 #borrowing
