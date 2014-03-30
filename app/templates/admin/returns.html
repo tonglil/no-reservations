@@ -7,20 +7,9 @@
     </div>
 
     {{ flash() }}
-    <div class="alert alert-dismissable alert-danger">
-          <button type="button" class="close" data-dismiss="alert">×</button>
-          <h4>Error</h4>
-          <p>Unable to process item: <a href="#" class="alert-link">err</a>.</p>
-    </div>
-
-    <div class="alert alert-dismissable alert-success">
-          <button type="button" class="close" data-dismiss="alert">×</button>
-          <h4>Success</h4>
-          <p>Item returned and processed!</p>
-    </div>
 
     <div class="well">
-        <form class="form-horizontal">
+        <form class="form-horizontal" action="/returns" method="post">
           <fieldset>
             <legend>Complete all fields</legend>
             <div class="form-group">

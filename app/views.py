@@ -106,7 +106,7 @@ def results():
                            )
 
 
-@app.route('/checkout')
+@app.route('/checkout', methods=['POST', 'GET'])
 def checkout():
     if request.method == 'POST':
         qbid = request.form['borrowerId']
@@ -121,25 +121,25 @@ def checkout():
             qcopyNo == ""
         ):
             message = Markup('Please fill in all fields.')
-            flash(message, 'warning')
+            flash(message, 'error')
         else:
-            query = """select 
+            query = """select *
                         from borrower
-                        where bid='{}'""".format(borrowerID)
+                        where bid='{}'""".format(qbid)
             qresult = db.engine.execute(query).first()
-            if len(qresult) == 0:
+            if qresult == None:
                 message = Markup('Borrower does not exist.')
-                flash(message, 'warning')
+                flash(message, 'error')
             else:
                 query = """select status
-                            from book_copy as bc
-                            where bc.callNumber ='{0}' and 
-                            bc.copyNo='{1}'""".format(qcallNumber,qcopyNo)
+                            from book_copy
+                            where callNumber ='{0}' and 
+                            copyNo='{1}'""".format(qcallNumber,qcopyNo)
                 qresult = db.engine.execute(query).first()
-                if qresult == "on-hold":
+                if qresult.status == "on-hold":
                     message = Markup('Copy is on hold.')
                     flash(message, 'warning')
-                elif qresult == "out":
+                elif qresult.status == "out":
                     message = Markup('Copy has been taken out.')
                     flash(message, 'warning')
                 else:
@@ -149,14 +149,11 @@ def checkout():
                                 copyNo='{1}'""".format(qcallNumber,qcopyNo)
                     qresult = db.engine.execute(query)
                     
-                    query = """insert into borrowing(bid, callNumber, copyNo, outDate, inDate) values"""
-                    query += """('
-                    {0}','{1}','{2}','{3}','{4}
-                    ')""".format(qbid,
-                                 qcallNumber,
+                    query = """insert into borrowing(bid, callNumber, copyNo, outDate) values"""
+                    query += """('{0}','{1}','{2}','{3}')""".format(qbid,
+                                 qcallNumber,   
                                  qcopyNo,
-                                 qoutDate,
-                                 qinDate)
+                                 qoutDate)
                     qresult = db.engine.execute(query)
                     
                     result = {}
@@ -174,9 +171,9 @@ def checkout():
                            )
 
 
-@app.route('/returns')
+@app.route('/returns', methods=['POST', 'GET'])
 def returns():
-    if request.method == "POST":
+    if request.method == 'POST':
         qcallNumber = request.form['callNumber']
         qcopyNo = request.form['copyNo']
         qinDate = datetime.datetime.now()
@@ -200,7 +197,7 @@ def returns():
             qresults = db.engine.execute(query).first()
             
             #if late, assign fine
-            if qinDate > (qresults + datetime.timedelta(days=14)) :
+            if qinDate > (qresults.outDate + datetime.timedelta(days=14)) :
                 query = """select borid 
                             from borrowing
                             where callNumber='{0}' and
@@ -209,10 +206,10 @@ def returns():
                 query = """insert into fine(amount, issuedDate, borid) 
                             values"""
                 query += """('
-                {0}','{1}','{2}','{3}
+                {0}','{1}','{2}
                 ')""".format(5.00,
                              qinDate,
-                             qresults)
+                             qresults.borid)
                 qresult = db.engine.execute(query)
                 message = Markup('Late return, a fee was assigned.')
                 flash(message, 'warning')
@@ -238,7 +235,15 @@ def returns():
                 qresults = db.engine.execute(query)
                 message = Markup('Item on hold, notifying holdee.')
                 flash(message, 'warning')
-                #notify holdee
+                query = """select bid
+                            from hold_request
+                            where callNumber='{}'""".format(qcallNumber)
+                qresult = db.engine.execute(query).first()
+                query = """select emailAddress
+                            from borrower
+                            where bid='{}'""".format(qresult)
+                qresult = db.engine.execute(query).first()
+                #notify holdee by sending email to qresult
                 
 
     return render_template('admin/returns.html',
