@@ -266,9 +266,41 @@ def borrowerAccount(borrower_id):
                            fines=fines,
                            error=error
                            )
-#@app.route('/borrower/:borrower/fines')
 
-
+@app.route('/borrower/<int:borrower_id>/fines', methods=['POST', 'GET'])
+def payFines(borrower_id):
+    if request.method == 'POST':
+        query = ""
+        for key in request.form:
+            query = """update fine
+                        set paidDate='{0}'
+                        where fid='{1}'""".format(datetime.datetime.now(), key)
+            break
+        db.engine.execute(query)
+        message = Markup('You have paid a fine.')
+        flash(message, 'warning')
+    fines = None
+    query = """select fid, amount, issuedDate
+                from fine as f, borrowing as b
+                where f.borid=b.borid and b.bid='{}'
+                and paidDate is NULL""".format(borrower_id)
+    qresults = db.engine.execute(query).fetchall()
+    if len(qresults) == 0:
+        message = Markup('You have no outstanding fines.')
+        flash(message, 'warning')
+    else:
+        fines = []
+        for result in qresults:
+            fine = {}
+            fine['fid'] = result.fid
+            fine['amount'] = result.amount
+            fine['issuedDate'] = result.issuedDate
+            fines.append(fine)
+    return render_template('borrower/fines.html',
+                            title='Pay Fines',
+                            user=user,
+                            fines = fines
+                            )
 
 ##overdue, checkedout, popular
 #@app.route('/report/:report')
