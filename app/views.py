@@ -1,7 +1,8 @@
 from flask import render_template, request, flash, Markup
 from app import app, db, models
+import datetime
 
-user = 12
+user = 111
 
 
 @app.route('/')
@@ -151,9 +152,90 @@ def borrowerNew():
 #@app.route('/borrower/add')
 @app.route('/borrower/<int:borrower_id>')
 def borrowerAccount(borrower_id):
+    overdue = 0
+    error = False
+    borrowerInfo = None
+    borrowedItems = None
+    fines = None
+    holdRequests = None
+    query = """select *
+                from borrower
+                where bid='{}'""".format(borrower_id)
+    qresults = db.engine.execute(query).first()
+    if qresults == None:
+        message = Markup('No borrower exists with this borrower_id.')
+        flash(message, 'error')
+        error = True
+    else:
+        borrowerInfo = qresults
+        
+        borrowedItems = []
+        query = """select borid, c.callNumber as cn, title, mainAuthor, outDate
+                    from borrowing as b, book as c
+                    where b.callNumber=c.callNumber
+                    and bid='{}'
+                    and inDate is NULL""".format(borrower_id)
+        qresults = db.engine.execute(query).fetchall()
+        typeQuery = """select bookTimeLimit
+                        from borrower as b, borrower_type as t
+                        where bid='{}' and b.type=t.type""".format(borrower_id)
+        timeLimit = db.engine.execute(typeQuery).first()
+        for result in qresults:
+            borrowedItem = {}
+            borrowedItem['borid'] = result.borid
+            borrowedItem['callNumber'] = result.cn
+            borrowedItem['title'] = result.title
+            borrowedItem['mainAuthor'] = result.mainAuthor
+            borrowedItem['outDate'] = result.outDate
+            borrowedItem['expiryDate'] = result.outDate+(timeLimit.bookTimeLimit-datetime.datetime(year=1970, month=1, day=1))
+            if borrowedItem['expiryDate'] > datetime.datetime.utcnow():
+                borrowedItem['expired'] = False;
+            else:
+                borrowedItem['expired'] = True;
+                overdue += 1
+            borrowedItems.append(borrowedItem)
+        if overdue > 0:
+            message = Markup('You have <a href="#overdue" class="alert-link">{} overdue</a> item(s).'.format(overdue))
+            flash(message, 'warning')
+        
+        query = """select hid, h.callNumber, title, 
+                    issuedDate
+                    from hold_request as h, book as b
+                    where bid='{}' and b.callNumber=h.callNumber""".format(borrower_id)
+        qresults = db.engine.execute(query).fetchall()
+        holdRequests = []
+        for result in qresults:
+            hr = {}
+            hr['hid'] = result.hid
+            hr['callNumber'] = result.callNumber
+            hr['title'] = result.title
+            hr['issuedDate'] = result.issuedDate
+            holdRequests.append(hr)
+            
+        query = """select fid, amount, issuedDate
+                    from fine as f, borrowing as b
+                    where f.borid=b.borid and b.bid='{}'
+                    and paidDate is NULL""".format(borrower_id)
+        qresults = db.engine.execute(query).fetchall()
+        if len(qresults) > 0:
+            message = Markup('You have <a href="#fines" class="alert-link">outstanding</a> fines.')
+            flash(message, 'warning')
+            fines = []
+            for result in qresults:
+                fine = {}
+                fine['fid'] = result.fid
+                fine['amount'] = result.amount
+                fine['issuedDate'] = result.issuedDate
+                fines.append(fine)
+        
     return render_template('borrower/account.html',
                            title='Account Information',
-                           user=user
+                           user=user,
+                           borrower=borrowerInfo,
+                           borrowedItems=borrowedItems,
+                           holdRequests=holdRequests,
+                           fines=fines,
+                           error=error
                            )
 #@app.route('/borrower/:borrower/fines')
 

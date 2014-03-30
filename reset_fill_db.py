@@ -14,13 +14,13 @@ db.create_all()
 #############################################
 #borrower_type
 #############################################
-type_student = models.BorrowerType('student', datetime.timedelta(weeks=2))
+type_student = models.BorrowerType(type = 'student', bookTimeLimit = datetime.timedelta(weeks=2))
 db.session.add(type_student)
 
-type_faculty = models.BorrowerType('faculty', datetime.timedelta(weeks=12))
+type_faculty = models.BorrowerType(type = 'faculty', bookTimeLimit = datetime.timedelta(weeks=12))
 db.session.add(type_faculty)
 
-type_staff = models.BorrowerType('staff', datetime.timedelta(weeks=6))
+type_staff = models.BorrowerType(type = 'staff', bookTimeLimit = datetime.timedelta(weeks=6))
 db.session.add(type_staff)
 
 ##############################################
@@ -72,7 +72,7 @@ db.session.add(hassubject_a2)
 ##############################################
 #book_copy
 ##############################################
-bookcopy_aa = models.BookCopy(callNumber=book_a.callNumber, copyNo="1", status="on-hold")
+bookcopy_aa = models.BookCopy(callNumber=book_a.callNumber, copyNo="1", status="in")
 db.session.add(bookcopy_aa)
 
 bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber, copyNo="2", status="in")
@@ -90,8 +90,11 @@ db.session.add(holdrequest_a)
 ##############################################
 #borrowing
 ##############################################
-borrowing_a = models.Borrowing(borid=22, bid=borrower_c.bid, callNumber=bookcopy_ba.callNumber, copyNo=bookcopy_ba.copyNo, outDate=datetime.datetime.now())
+borrowing_a = models.Borrowing(borid=22, bid=borrower_b.bid, callNumber=bookcopy_ba.callNumber, copyNo=bookcopy_ba.copyNo, outDate=datetime.datetime(year=2013, month=1, day=1))
 db.session.add(borrowing_a)
+
+borrowing_b = models.Borrowing(borid=33, bid=borrower_b.bid, callNumber=bookcopy_aa.callNumber, copyNo=bookcopy_aa.copyNo, outDate=datetime.datetime.now())
+db.session.add(borrowing_b)
 
 ##############################################
 #fine
