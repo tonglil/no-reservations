@@ -241,7 +241,7 @@ def borrowerAccount(borrower_id):
                                                              day=1)
                                            )
                                           )
-            if borrowedItem['expiryDate'] > datetime.datetime.utcnow():
+            if borrowedItem['expiryDate'] > datetime.datetime.now():
                 borrowedItem['expired'] = False
             else:
                 borrowedItem['expired'] = True
