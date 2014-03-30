@@ -21,16 +21,16 @@
         </thead>
         
         <tbody>
+          {% if fines %}
+          {% for fine in fines %}
           <tr>
-            {% if fines %}
-            {% for fine in fines %}
             <td>{{fine['fid']}}</td>
             <td>{{fine['issuedDate']}}</td>
             <td>{{fine['amount']}}</td>
             <td><button type="submit" class="btn btn-success" name="{{fine['fid']}}">Pay Fine</button></td>
-            {% endfor %}
-            {% endif %}
           </tr>
+          {% endfor %}
+          {% endif %}
         </tbody>
       </table>
     </form>

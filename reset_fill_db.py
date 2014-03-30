@@ -103,5 +103,8 @@ db.session.add(borrowing_b)
 fine_a = models.Fine(fid=123, amount=2852.12, issuedDate=datetime.datetime.now(), borid=borrowing_a.borid)
 db.session.add(fine_a)
 
+fine_b = models.Fine(fid=13, amount=852.12, issuedDate=datetime.datetime.now(), borid=borrowing_b.borid)
+db.session.add(fine_b)
+
 db.session.commit()
 
