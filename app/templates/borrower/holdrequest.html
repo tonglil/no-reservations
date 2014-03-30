@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block cover %}
+<div class="container">
+  <div class="page-header">
+    <h1>Pay Outstanding Fines</h1>
+  </div>
+  
+  {{ flash() }}
+  
+  <div class="well">
+    <form class="form-horizontal" action="" method="post">
+      <div class="form-group">
+        <label for="inputCallNumber" class="col-lg-2 control-label">Call Number</label>
+        <div class="col-lg-10">
+          <input class="form-control" name="callNumber" id="inputCallNumber" placeholder="e.g. 12345678" type="text">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <div class="col-lg-10 col-lg-offset-2">
+          <button type="submit" class="btn btn-success">Place Hold Request</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

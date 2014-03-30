@@ -88,7 +88,7 @@ class HoldRequest(db.Model):
     bid = db.Column(db.Integer, db.ForeignKey('borrower.bid'), nullable=False)
     callNumber = db.Column(db.String(50), db.ForeignKey('book.callNumber'),
                            nullable=False)
-    issuedDate = db.Column(db.DateTime)
+    issuedDate = db.Column(db.DateTime, default=datetime.now())
 
 
 # This model is a little special in that to define a composite foreign key it
