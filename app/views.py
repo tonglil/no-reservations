@@ -16,7 +16,6 @@ def index():
 @app.route('/search', methods=['POST', 'GET'])
 def results():
     results = None
-    err = False
     if request.method == 'POST':
         title = 'Search Results'
 
@@ -28,7 +27,8 @@ def results():
         qauthor = request.form['author']
 
         if qtitle == "" and qsubject == "" and qauthor == "":
-            err = True
+            message = Markup('Bad search: <a href="#" class="alert-link">you must complete at least one field</a>.')
+            flash(message, 'error')
         else:
             query = """select distinct b.callNumber
                         from book as b, has_subject as s, has_author as a
@@ -43,7 +43,6 @@ def results():
                 query += """(b.callNumber=a.callNumber and a.name like
                 '%%{}%%')) and """.format(qauthor)
             query = query[0:-4]
-    #        return query
 
             qresults = db.engine.execute(query).fetchall()
 
@@ -103,8 +102,7 @@ def results():
     return render_template('search.html',
                            title=title,
                            user=user,
-                           results=results,
-                           error=err
+                           results=results
                            )
 
 
@@ -204,10 +202,9 @@ def borrowerNew():
 @app.route('/borrower/<int:borrower_id>')
 def borrowerAccount(borrower_id):
     overdue = 0
-    error = False
     borrowerInfo = None
     borrowedItems = None
-    fines = None
+    fines = []
     holdRequests = None
     query = """select *
                 from borrower
@@ -216,7 +213,6 @@ def borrowerAccount(borrower_id):
     if qresults is None:
         message = Markup('No borrower exists with this borrower_id.')
         flash(message, 'error')
-        error = True
     else:
         borrowerInfo = qresults
 
@@ -279,7 +275,6 @@ def borrowerAccount(borrower_id):
             message = Markup('''You have <a href="#fines"
                              class="alert-link">outstanding</a> fines.''')
             flash(message, 'warning')
-            fines = []
             for result in qresults:
                 fine = {}
                 fine['fid'] = result.fid
@@ -293,8 +288,7 @@ def borrowerAccount(borrower_id):
                            borrower=borrowerInfo,
                            borrowedItems=borrowedItems,
                            holdRequests=holdRequests,
-                           fines=fines,
-                           error=error
+                           fines=fines
                            )
 
 
