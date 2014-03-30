@@ -108,41 +108,65 @@ def results():
 
 @app.route('/checkout')
 def checkout():
-    qbid = request.form['borrowerId']
-    qcallNumber = request.form['callNumber']
-    qcopyNo = request.form['copyNo']
-    
-    if qbid == "" or qcallNumber == "" or qcopyNo == "":
-        message = Markup('Please fill in all fields.')
-        flash(message, 'warning')
-    else:
-        query = """select 
-                    from borrower
-                    where bid='{}'""".format(borrowerID)
-        qresult = db.engine.execute(query).first()
-        if len(qresult) == 0:
-            message = Markup('Borrower does not exist.')
+    if request.method == 'POST':
+        qbid = request.form['borrowerId']
+        qcallNumber = request.form['callNumber']
+        qcopyNo = request.form['copyNo']
+        qoutDate = datetime.datetime.now()
+        qinDate = datetime.datetime.now() + datetime.timedelta(days=14)
+        
+        if (
+            qbid == "" or 
+            qcallNumber == "" or 
+            qcopyNo == ""
+        ):
+            message = Markup('Please fill in all fields.')
             flash(message, 'warning')
         else:
-            query = """select status
-                        from book_copy as bc
-                        where bc.callNumber ='{0}' and 
-                        bc.copyNo='{1}'""".format(qcallNumber,qcopyNo)
+            query = """select 
+                        from borrower
+                        where bid='{}'""".format(borrowerID)
             qresult = db.engine.execute(query).first()
-            if qresult == "on-hold":
-                message = Markup('Copy is on hold.')
-                flash(message, 'warning')
-            elif qresult == "out":
-                message = Markup('Copy has been taken out.')
+            if len(qresult) == 0:
+                message = Markup('Borrower does not exist.')
                 flash(message, 'warning')
             else:
-                query = """update book_copy
-                            set status='out'
-                            where callNumber='{0}' and
-                            copyNo='{1}'""".format(qcallNumber,qcopyNo)
-                qresult = db.engine.execute(query)
-                #query = """
-            
+                query = """select status
+                            from book_copy as bc
+                            where bc.callNumber ='{0}' and 
+                            bc.copyNo='{1}'""".format(qcallNumber,qcopyNo)
+                qresult = db.engine.execute(query).first()
+                if qresult == "on-hold":
+                    message = Markup('Copy is on hold.')
+                    flash(message, 'warning')
+                elif qresult == "out":
+                    message = Markup('Copy has been taken out.')
+                    flash(message, 'warning')
+                else:
+                    query = """update book_copy
+                                set status='out'
+                                where callNumber='{0}' and
+                                copyNo='{1}'""".format(qcallNumber,qcopyNo)
+                    qresult = db.engine.execute(query)
+                    
+                    query = """insert into borrowing(bid, callNumber, copyNo, outDate, inDate) values"""
+                    query += """('
+                    {0}','{1}','{2}','{3}','{4}
+                    ')""".format(qbid,
+                                 qcallNumber,
+                                 qcopyNo,
+                                 qoutDate,
+                                 qinDate)
+                    qresult = db.engine.execute(query)
+                    
+                    result = {}
+                    query = """select title
+                                from book
+                                where callNumber='{}'""".format(qcallNumber)
+                    qresult = db.engine.execute(query).first()
+                    result['title'] = qresult
+                    result['callNumber'] = qcallNumber
+                    result['dueDate'] = qinDate
             
     return render_template('admin/checkout.html',
                            title='Checkout Items',
@@ -152,6 +176,71 @@ def checkout():
 
 @app.route('/returns')
 def returns():
+    if request.method == "POST":
+        qcallNumber = request.form['callNumber']
+        qcopyNo = request.form['copyNo']
+        qinDate = datetime.datetime.now()
+        
+        if (
+            qcallNumber == "" or
+            qcopyNo == ""
+        ):
+            message = Markup('All fields must be completed.')
+            flash(message, 'error')
+        else:
+            query = """update borrowing
+                        set inDate='{0}'
+                        where callNumber='{1}' and
+                        copyNo='{2}'""".format(qinDate,qcallNumber,qcopyNo)
+            qresults = db.engine.execute(query)
+            query = """select outDate
+                        from borrowing
+                        where callNumber='{0}' and
+                        copyNo='{1}'""".format(qcallNumber,qcopyNo)
+            qresults = db.engine.execute(query).first()
+            
+            #if late, assign fine
+            if qinDate > (qresults + datetime.timedelta(days=14)) :
+                query = """select borid 
+                            from borrowing
+                            where callNumber='{0}' and
+                            copyNo='{1}'""".format(qcallNumber,qcopyNo)
+                qresults = db.engine.execute(query).first()
+                query = """insert into fine(amount, issuedDate, borid) 
+                            values"""
+                query += """('
+                {0}','{1}','{2}','{3}
+                ')""".format(5.00,
+                             qinDate,
+                             qresults)
+                qresult = db.engine.execute(query)
+                message = Markup('Late return, a fee was assigned.')
+                flash(message, 'warning')
+            
+            #if there are no holds, set book status in, otherwise notify holdee
+            query = """select *
+                        from hold_request
+                        where callNumber='{}'""".format(qcallNumber)
+            qresults = db.engine.execute(query).fetchall()
+            if len(qresults) == 0:
+                query = """update book_copy
+                            set status='in'
+                            where callNumber='{0}' and
+                            copyNo='{1}'""".format(qcallNumber, qcopyNo)
+                qresults = db.engine.execute(query)
+                message = Markup('Item successfully returned and processed.')
+                flash(message, 'message')
+            else:
+                query = """update book_copy
+                            set status='on-hold'
+                            where callNumber='{0}' and
+                            copyNo='{1}'""".format(qcallNumber, qcopyNo)
+                qresults = db.engine.execute(query)
+                message = Markup('Item on hold, notifying holdee.')
+                flash(message, 'warning')
+                #notify holdee
+                
+
     return render_template('admin/returns.html',
                            title='Process Returns',
                            user=user
@@ -200,7 +289,7 @@ def borrowerNew():
             qtype == ""
         ):
             message = Markup('All fields must be completed.')
-            flash(message, 'warning')
+            flash(message, 'error')
         else:
             query = """select distinct b.sinOrStNo
                         from borrower as b
@@ -208,10 +297,10 @@ def borrowerNew():
             qresults = db.engine.execute(query).fetchall()
             if len(qresults) > 0:
                 message = Markup('This SIN or student number already exists')
-                flash(message, 'warning')
+                flash(message, 'error')
             elif qpassword != qpasswordConfirm:
                 message = Markup('Make sure both passwords match')
-                flash(message, 'warning')
+                flash(message, 'error')
             else:
                 query = """insert into borrower(password, name, address, phone,
                 emailAddress, sinOrStNo, expiryDate, type) values"""
@@ -226,6 +315,8 @@ def borrowerNew():
                              qexpiryDate,
                              qtype)
                 qresult = db.engine.execute(query)
+                message = Markup('New borrower added!')
+                flash(message, 'message')
     else:
         title = 'New Borrower Account'
 

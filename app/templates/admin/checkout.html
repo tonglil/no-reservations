@@ -43,55 +43,31 @@
         </form>
     </div>
 
-    <div class="page-header">
-        <h2>Item Receipt</h2>
-    </div>
-
+    {% if results %}
     <div class="results">
+        <div class="page-header">
+            <h2>Checkout Receipt</h2>
+        </div>
+
         <table class="table table-striped table-hover table-bordered">
           <thead>
             <tr class="success">
-              <th>#</th>
-              <th>Column heading</th>
-              <th>Column heading</th>
-              <th>Column heading</th>
+              <th>Title</th>
+              <th>Call Number</th>
+              <th>Due Date</th>
             </tr>
           </thead>
 
           <tbody>
             <tr>
-              <td>1</td>
-              <td>Column content</td>
-              <td>Column content</td>
-              <td>Column content</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Column content</td>
-              <td>Column content</td>
-              <td>Column content</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Column content</td>
-              <td>Column content</td>
-              <td>Column content</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Column content</td>
-              <td>Column content</td>
-              <td>Column content</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>Column content</td>
-              <td>Column content</td>
-              <td>Column content</td>
+              <td>{{result['title']}}</td>
+              <td>{{result['callNumber']}}</td>
+              <td>{{result['dueDate']}}</td>
             </tr>
           </tbody>
         </table>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
 
