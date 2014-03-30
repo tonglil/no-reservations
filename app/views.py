@@ -1,5 +1,6 @@
 from flask import render_template, request, flash, Markup
 from app import app, db, models
+import datetime
 
 user = 12
 
@@ -134,15 +135,44 @@ def itemNew():
 @app.route('/borrower/new', methods=['POST', 'GET'])
 def borrowerNew():
     results = None
+    err = False
 
     if request.method == 'POST':
-        title = 'Search Results'
-        print request.form
+        title = 'New Borrower Account'
+        #print request.form
+        
+        qname = request.form['name']
+        qemail = request.form['email']
+        qpassword = request.form['password']
+        qpasswordConfirm = request.form['passwordConfirm']
+        qaddress = request.form['address']
+        qphoneNumber = request.form['phoneNumber']
+        qsinOrSid = request.form['sinOrSid']
+        qtype = request.form['type']
+        qexpiryDate = datetime.datetime.now() + datetime.timedelta(days=365)
+        
+        if qname == "" or qemail == "" or qpassword == "" or qpasswordConfirm == "" or qaddress == "" or qphoneNumber == "" or qsinOrSid == "" or qtype == "":
+            err = True
+        else:
+            query = """select distinct b.sinOrStNo
+                        from borrower as b"""
+            qresults = db.engine.execute(query).fetchall()
+            if len(qresults) > 0:
+                message = Markup('This SIN or Student Number already exists')
+                flash(message, 'warning')
+            if qpassword != qpasswordConfirm:
+                message = Markup('Make sure both passwords match')
+                flash(message, 'warning')
+            else:
+                query = """insert into borrower(password, name, address, phone, emailAddress, sinOrStNo, expiryDate, type)
+                        values"""
+                query += "('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}')".format(qpassword,qname,qaddress,qphoneNumber,qemail, qsinOrSID, qexipryDate, qtype)
+                qresult = db.engine.execute(query)
     else:
-        title = 'Search'
+        title = 'New Borrower Account'
 
     return render_template('borrower/new.html',
-                           title='New Borrower Account',
+                           title=title,
                            user=user,
                            results=results
                            )
