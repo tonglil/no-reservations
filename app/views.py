@@ -507,7 +507,7 @@ def payFines(borrower_id):
 
 #checkedout, popular
 @app.route('/report/checkedout', methods=['GET', 'POST'])
-def report():
+def reportCheckedout():
     booksout = None
     qresults = None
     subject = None
@@ -570,4 +570,42 @@ def report():
                            user=user,
                            booksout=booksout,
                            subject=subject
+                           )
+
+@app.route('/report/popular', methods=['GET', 'POST'])
+def reportPopular():
+    topResults = []
+    limit = None
+    year = None
+    rank = 0
+    if request.method == 'POST':
+        limit = request.form['limit']
+        year = request.form['year']
+        if limit == "" or year == "":
+            message = Markup('Put a Limit and Year')
+            flash(message, 'warning')
+        else:
+            query = """SELECT B.callNumber,year,COUNT(R.callNumber) AS numcheout,B.title
+                        FROM Borrowing R, Book B
+                        WHERE R.callNumber = B.callNumber AND year = """ +year+ """
+                        GROUP BY R.callNumber
+                        ORDER BY numcheout DESC
+                        LIMIT """ + limit
+            qresults = db.engine.execute(query).fetchall()
+            for result in qresults:
+                topResult = {}
+                topResult['rank'] = rank + 1
+                topResult['callNumber'] = result.callNumber
+                topResult['title'] = result.title
+                topResult['times'] = result.numcheout
+                topResults.append(topResult)
+    else:
+        message = Markup('Put a Limit and Year')
+        flash(message, 'warning')
+    return render_template('admin/reportpopular.html',
+                           title='Popular Books Report',
+                           user=user,
+                           topResults=topResults,
+                           limit=limit,
+                           year=year
                            )
