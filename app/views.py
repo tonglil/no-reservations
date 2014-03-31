@@ -267,6 +267,34 @@ def returns():
                            title='Process Returns',
                            user=user
                            )
+                           
+@app.route('/report/overdue')
+def overdue():
+    overdueRange = datetime.datetime.now() - datetime.timedelta(days=14)
+    
+    query = """select *
+                from borrowing
+                where inDate is NULL
+                and outDate<'{}'""".format(overdueRange)
+    qresults = db.engine.execute(query).fetchall()
+                
+    overdue = []
+    for result in qresults:
+        item = {}
+        query = """select title
+            from book
+            where callNumber='{}'""".format(result.callNumber)
+        qtitle = db.engine.execute(query).first()
+        item['title'] = qtitle
+        item['callNumber'] = result.callNumber
+        item['copyNo'] = result.copyNo
+        item['dueDate'] = result.outDate + datetime.timedelta(days=14)
+        overdue.append(item)
+                
+    return render_template('report/overdue.html',
+                           title='Overdue Items',
+                           user=user
+                           )
 
 
 @app.route('/item/new')
