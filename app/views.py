@@ -1,6 +1,7 @@
 from flask import render_template, request, flash, Markup
 from app import app, db
 import datetime
+import csv
 
 user = 111
 
@@ -169,7 +170,6 @@ def itemNew():
         qmainAuthor = request.form['mainAuthor']
         qpublisher = request.form['publisher']
         qyear = request.form['year']
-
         if (
             qcallNumber == "" or
             qisbn == "" or
@@ -181,7 +181,7 @@ def itemNew():
             message = Markup('All fields must be completed.')
             flash(message, 'warning')
         else:
-            query = """INSERT INTO Book (callNumber, isbn, title, mainAuthor, publisher, year) VALUES"""
+            query = """INSERT INTO Book (callNumber, isbn, title, mainAuthor, publisher, year) VALUES """
             query += """('{0}','{1}','{2}','{3}','{4}','{5}')""".format(
                 qcallNumber,
                 qisbn,
@@ -189,8 +189,34 @@ def itemNew():
                 qmainAuthor,
                 qpublisher,
                 qyear)
-        qresult = db.engine.execute(query)
+        # qresult = db.engine.execute(query)
         message = Markup('You added an item. Query is: ' + query)
+        flash(message, 'success')
+
+        qotherAuthors = []
+        qotherAuthors.append(qmainAuthor)
+        for row in csv.reader([request.form['otherAuthor']]):
+            for value in row:
+                qotherAuthors.append(value.strip())
+        for author in qotherAuthors:
+            query1 = """INSERT INTO HasAuthor (callNumber, name) VALUES """
+            query1 += """('{0}','{1}')""".format(
+                qcallNumber,
+                author)
+        authstring = ""
+        for author in qotherAuthors:
+            authstring += author + '?'
+        message = Markup('You added multiple authors: ' + authstring)
+        flash(message, 'success')
+
+        qsubjects = []
+        for row in csv.reader([request.form['subjects']]):
+            for value in row:
+                qsubjects.append(value.strip())
+        substring = ""
+        for subject in qsubjects:
+            substring += subject + '?'
+        message = Markup('You added multiple subjects: ' + substring)
         flash(message, 'success')
 
     return render_template('admin/new.html',
