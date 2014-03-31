@@ -293,7 +293,7 @@ def overdue():
         qborrower = db.engine.execute(query).first()
         item['bid'] = result.bid
         item['name'] = qborrower.name
-        item['name'] = qborrower.emailAddress
+        item['emailAddress'] = qborrower.emailAddress
         item['title'] = qtitle
         item['callNumber'] = result.callNumber
         item['copyNo'] = result.copyNo
