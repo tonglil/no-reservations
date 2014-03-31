@@ -505,5 +505,69 @@ def payFines(borrower_id):
                            fines=fines
                            )
 
-##overdue, checkedout, popular
-#@app.route('/report/:report')
+#checkedout, popular
+@app.route('/report/checkedout', methods=['GET', 'POST'])
+def report():
+    booksout = None
+    qresults = None
+    subject = None
+    if request.method == 'POST':
+        qsubjects = []
+        for row in csv.reader([request.form['subjects']]):
+            for value in row:
+                qsubjects.append(value.strip())
+        if len(qsubjects) > 1:
+            message = Markup('Put only 1 subject')
+            flash(message, 'warning')
+        else:
+            subject = request.form['subjects']
+            query = """SELECT *,B.callNumber as BCallNumber,C.copyNo as CCopyNo
+                        FROM Book_Copy C, Borrowing R, Book B
+                        WHERE C.status = 'out' AND C.callNumber = R.callNumber AND C.copyNo = R.copyNo AND B.callNumber = C.callNumber AND EXISTS (SELECT *
+                                        FROM Book B, Has_Subject S
+                                        WHERE B.callNumber = S.callNumber AND S.subject = '""" + subject + """' AND C.callNumber = B.callNumber)
+                        ORDER BY C.callNumber"""
+            qresults = db.engine.execute(query).fetchall()
+    else:
+        query = """SELECT *,B.callNumber as BCallNumber,C.copyNo as CCopyNo
+                    FROM Book_Copy C, Borrowing R, Book B
+                    WHERE C.status = 'out' AND C.callNumber = R.callNumber AND C.copyNo = R.copyNo AND B.callNumber = C.callNumber
+                    ORDER BY C.callNumber"""
+        qresults = db.engine.execute(query).fetchall()
+    if qresults == None:
+        message = Markup('Bad search')
+        flash(message, 'warning')
+    elif len(qresults) == 0:
+        message = Markup('LOL NO BOOKS OUT')
+        flash(message, 'warning')
+    else:
+        booksout = []
+        for result in qresults:
+            book = {}
+            book['callNumber'] = result.BCallNumber
+            book['copyNo'] = result.CCopyNo
+            book['title'] = result.title
+            book['bid'] = result.bid
+            book['outDate'] = result.outDate
+
+            typeQuery = """select bookTimeLimit
+                        from borrower as b, borrower_type as t
+                        where bid='{}' and b.type=t.type""".format(result.bid)
+            timeLimit = db.engine.execute(typeQuery).first()
+
+            book['dueDate'] = result.outDate + (timeLimit.bookTimeLimit - datetime.datetime(year=1970, month=1, day=1))
+
+            book['inDate'] = result.inDate
+
+            if datetime.datetime.now() > book['dueDate']:
+                book['overdue'] = 'Yes'
+            else:
+                book['overdue'] = 'No'
+            booksout.append(book)
+
+    return render_template('admin/reportcheckedout.html',
+                           title='Checked Out Report',
+                           user=user,
+                           booksout=booksout,
+                           subject=subject
+                           )
