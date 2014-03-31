@@ -363,6 +363,10 @@ def borrowerAccount(borrower_id):
                            fines=fines
                            )
 
+#TODO: hold urls should map to:
+#/hold/borrower_id/remove and
+#/hold/borrower_id/new
+#@app.route('/borrower/<int:borrower_id>/holdcancel', methods=['POST'])
 @app.route('/borrower/<int:borrower_id>/holdrequest', methods=['POST', 'GET'])
 def placeHoldRequest(borrower_id):
     if request.method == 'POST':
