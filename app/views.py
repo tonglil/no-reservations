@@ -190,71 +190,80 @@ def returns():
             message = Markup('All fields must be completed.')
             flash(message, 'error')
         else:
-            query = """update borrowing
-                        set inDate='{0}'
-                        where callNumber='{1}' and
-                        copyNo='{2}'""".format(qinDate,qcallNumber,qcopyNo)
-            qresults = db.engine.execute(query)
-            query = """select outDate
-                        from borrowing
+            query = """select status
+                        from book_copy
                         where callNumber='{0}' and
                         copyNo='{1}'""".format(qcallNumber,qcopyNo)
-            qresults = db.engine.execute(query).first()
-            
-            #if late, assign fine
-            if qinDate > (qresults.outDate + datetime.timedelta(days=14)) :
-                query = """select borid 
+            qresult = db.engine.execute(query).first()
+            if qresult.status == "in":
+                message = Markup('This book has not been taken out.')
+                flash(message, 'error')
+            else:
+                query = """update borrowing
+                            set inDate='{0}'
+                            where callNumber='{1}' and
+                            copyNo='{2}'""".format(qinDate,qcallNumber,qcopyNo)
+                qresults = db.engine.execute(query)
+                query = """select outDate
                             from borrowing
                             where callNumber='{0}' and
                             copyNo='{1}'""".format(qcallNumber,qcopyNo)
                 qresults = db.engine.execute(query).first()
-                query = """insert into fine(amount, issuedDate, borid) 
-                            values"""
-                query += """('
-                {0}','{1}','{2}
-                ')""".format(5.00,
-                             qinDate,
-                             qresults.borid)
-                qresult = db.engine.execute(query)
-                message = Markup('Late return, a fee was assigned.')
-                flash(message, 'warning')
-            
-            #if there are no holds, set book status in, otherwise notify holdee
-            query = """select *
-                        from hold_request
-                        where callNumber='{}'""".format(qcallNumber)
-            qresults = db.engine.execute(query).fetchall()
-            if len(qresults) == 0:
-                query = """update book_copy
-                            set status='in'
-                            where callNumber='{0}' and
-                            copyNo='{1}'""".format(qcallNumber, qcopyNo)
-                qresults = db.engine.execute(query)
-                message = Markup('Item successfully returned and processed.')
-                flash(message, 'message')
-            else:
-                query = """update book_copy
-                            set status='on-hold'
-                            where callNumber='{0}' and
-                            copyNo='{1}'""".format(qcallNumber, qcopyNo)
-                qresults = db.engine.execute(query)
-                message = Markup('Item on hold, notifying holdee.')
-                flash(message, 'warning')
-                query = """select bid
+                
+                #if late, assign fine
+                if qinDate > (qresults.outDate + datetime.timedelta(days=14)) :
+                    query = """select borid 
+                                from borrowing
+                                where callNumber='{0}' and
+                                copyNo='{1}'""".format(qcallNumber,qcopyNo)
+                    qresults = db.engine.execute(query).first()
+                    query = """insert into fine(amount, issuedDate, borid) 
+                                values"""
+                    query += """('
+                    {0}','{1}','{2}
+                    ')""".format(5.00,
+                                 qinDate,
+                                 qresults.borid)
+                    qresult = db.engine.execute(query)
+                    message = Markup('Late return, a fee was assigned.')
+                    flash(message, 'warning')
+                
+                #if there are no holds, set book status in, otherwise notify holdee
+                query = """select *
                             from hold_request
                             where callNumber='{}'""".format(qcallNumber)
-                qresult = db.engine.execute(query).first()
-                query = """select emailAddress
-                            from borrower
-                            where bid='{}'""".format(qresult)
-                qresult = db.engine.execute(query).first() #contains email address of holdee
-                
-                query = """select *
-                            from book
-                            where callNumber='{0}' and
-                            copyNo='{1}'""".format(qcallNumber, qcopyNo)
-                qbook = db.engine.execute(query).fetchall() #contains book information of item on hold
-                #notify holdee by sending email
+                qresults = db.engine.execute(query).fetchall()
+                if len(qresults) == 0:
+                    query = """update book_copy
+                                set status='in'
+                                where callNumber='{0}' and
+                                copyNo='{1}'""".format(qcallNumber, qcopyNo)
+                    qresults = db.engine.execute(query)
+                    message = Markup('Item successfully returned and processed.')
+                    flash(message, 'message')
+                else:
+                    query = """update book_copy
+                                set status='on-hold'
+                                where callNumber='{0}' and
+                                copyNo='{1}'""".format(qcallNumber, qcopyNo)
+                    qresults = db.engine.execute(query)
+                    message = Markup('Item on hold, notifying holdee.')
+                    flash(message, 'warning')
+                    query = """select bid
+                                from hold_request
+                                where callNumber='{}'""".format(qcallNumber)
+                    qresult = db.engine.execute(query).first()
+                    query = """select emailAddress
+                                from borrower
+                                where bid='{}'""".format(qresult)
+                    qresult = db.engine.execute(query).first() #contains email address of holdee
+                    
+                    query = """select *
+                                from book
+                                where callNumber='{0}' and
+                                copyNo='{1}'""".format(qcallNumber, qcopyNo)
+                    qbook = db.engine.execute(query).fetchall() #contains book information of item on hold
+                    #notify holdee by sending email
 
     return render_template('admin/returns.html',
                            title='Process Returns',
