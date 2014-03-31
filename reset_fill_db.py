@@ -167,6 +167,11 @@ db.session.add(hassubject_e2)
 ##############################################
 #book_copy
 ##############################################
+bookcopy_z = models.BookCopy(callNumber=book_d.callNumber,
+                              copyNo="3",
+                              status="out")
+db.session.add(bookcopy_z)
+
 bookcopy_aa = models.BookCopy(callNumber=book_a.callNumber,
                               copyNo="1",
                               status="out")
@@ -228,6 +233,18 @@ db.session.add(holdrequest_a)
 ##############################################
 #borrowing
 ##############################################
+borrowing_d = models.Borrowing(borid=21,
+                               bid=borrower_b.bid,
+                               callNumber=bookcopy_z.callNumber,
+                               copyNo=bookcopy_z.copyNo,
+                               outDate=datetime.datetime(year=2013,
+                                                         month=1,
+                                                         day=1),
+                               inDate=datetime.datetime(year=2013,
+                                                         month=2,
+                                                         day=1))
+db.session.add(borrowing_d)
+
 borrowing_a = models.Borrowing(borid=22,
                                bid=borrower_b.bid,
                                callNumber=bookcopy_ba.callNumber,

@@ -199,7 +199,7 @@ def itemNew():
                     'in')
                 qresult = db.engine.execute(query)
                 message = Markup('This book already exists, adding as copy')
-                flash(message, 'warning')
+                flash(message, 'success')
             else:
                 query = """INSERT INTO Book (callNumber, isbn, title, mainAuthor, publisher, year) VALUES """
                 query += """('{0}','{1}','{2}','{3}','{4}','{5}')""".format(
@@ -210,7 +210,7 @@ def itemNew():
                     qpublisher,
                     qyear)
                 qresult = db.engine.execute(query)
-                message = Markup('You added an item. Query is: ' + query)
+                message = Markup('You added an item.')
                 flash(message, 'success')
 
                 qcopyNo = 1
@@ -220,8 +220,8 @@ def itemNew():
                     qcopyNo,
                     'in')
                 qresult = db.engine.execute(query)
-                message = Markup('Adding as copy: ' + query)
-                flash(message, 'warning')
+                # message = Markup('Adding as copy: ' + query)
+                # flash(message, 'warning')
 
                 if request.form['otherAuthor'] != "":
                     qotherAuthors = []
@@ -234,8 +234,8 @@ def itemNew():
                         query1 += """('{0}','{1}')""".format(
                             qcallNumber,
                             author)
-                        message = Markup('You added multiple authors: ' + query1)
-                        flash(message, 'success')
+                        # message = Markup('You added multiple authors: ' + query1)
+                        # flash(message, 'success')
                         qresult = db.engine.execute(query1)
 
                 if request.form['subjects'] != "":
@@ -248,8 +248,8 @@ def itemNew():
                         query2 += """('{0}','{1}')""".format(
                             qcallNumber,
                             subject)
-                        message = Markup('You added multiple subjects: ' + query2)
-                        flash(message, 'success')
+                        # message = Markup('You added multiple subjects: ' + query2)
+                        # flash(message, 'success')
                         qresult = db.engine.execute(query2)
 
     return render_template('admin/new.html',
