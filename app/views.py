@@ -161,7 +161,7 @@ def checkout():
                             item['dueDate'] = qinDate
                             receipt.append(item)
                         message = Markup('A copy has been successfully checked out.')
-                        flash(message, 'message')
+                        flash(message, 'success')
                         break
                 else:
                     message = Markup('All copies are out or on hold.')
@@ -238,7 +238,7 @@ def returns():
                                 copyNo='{1}'""".format(qcallNumber, qcopyNo)
                     qresults = db.engine.execute(query)
                     message = Markup('Item successfully returned and processed.')
-                    flash(message, 'message')
+                    flash(message, 'success')
                 else:
                     query = """update book_copy
                                 set status='on-hold'
@@ -277,7 +277,9 @@ def overdue():
                 where inDate is NULL
                 and outDate<'{}'""".format(overdueRange)
     qresults = db.engine.execute(query).fetchall()
-                
+    if len(qresults) == 0:
+        message = Markup('There are no overdue items.')
+        flash(message, 'success')
     overdue = []
     for result in qresults:
         item = {}
@@ -366,7 +368,7 @@ def borrowerNew():
                              qtype)
                 qresult = db.engine.execute(query)
                 message = Markup('New borrower added!')
-                flash(message, 'message')
+                flash(message, 'success')
     else:
         title = 'New Borrower Account'
 
