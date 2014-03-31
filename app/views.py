@@ -165,7 +165,7 @@ def itemNew():
     err = False
     if request.method == 'POST':
         qcallNumber = request.form['callNumber']
-        qisbn = request.form['isbn']
+        qisbn = request.form['isbn'].replace("-", "")
         qtitle = request.form['title']
         qmainAuthor = request.form['mainAuthor']
         qpublisher = request.form['publisher']
@@ -181,43 +181,76 @@ def itemNew():
             message = Markup('All fields must be completed.')
             flash(message, 'warning')
         else:
-            query = """INSERT INTO Book (callNumber, isbn, title, mainAuthor, publisher, year) VALUES """
-            query += """('{0}','{1}','{2}','{3}','{4}','{5}')""".format(
-                qcallNumber,
-                qisbn,
-                qtitle,
-                qmainAuthor,
-                qpublisher,
-                qyear)
-        # qresult = db.engine.execute(query)
-        message = Markup('You added an item. Query is: ' + query)
-        flash(message, 'success')
+            query = """SELECT B.callNumber
+                        FROM Book B
+                        WHERE B.callNumber='{}'""".format(qcallNumber)
+            qresults = db.engine.execute(query).fetchall()
+            if len(qresults) > 0:
+                query = """SELECT MAX(copyNo)
+                            FROM Book_Copy C
+                            WHERE C.callNumber = '{}'""".format(qcallNumber)
+                qresults = db.engine.execute(query).fetchall()
+                for row in qresults:
+                    qcopyNo = int(row[0]) + 1
+                query = """INSERT INTO Book_Copy (callNumber, copyNo, status) VALUES """
+                query += """('{0}','{1}','{2}')""".format(
+                    qcallNumber,
+                    qcopyNo,
+                    'in')
+                qresult = db.engine.execute(query)
+                message = Markup('This book already exists, adding as copy')
+                flash(message, 'warning')
+            else:
+                query = """INSERT INTO Book (callNumber, isbn, title, mainAuthor, publisher, year) VALUES """
+                query += """('{0}','{1}','{2}','{3}','{4}','{5}')""".format(
+                    qcallNumber,
+                    qisbn,
+                    qtitle,
+                    qmainAuthor,
+                    qpublisher,
+                    qyear)
+                qresult = db.engine.execute(query)
+                message = Markup('You added an item. Query is: ' + query)
+                flash(message, 'success')
 
-        qotherAuthors = []
-        qotherAuthors.append(qmainAuthor)
-        for row in csv.reader([request.form['otherAuthor']]):
-            for value in row:
-                qotherAuthors.append(value.strip())
-        for author in qotherAuthors:
-            query1 = """INSERT INTO HasAuthor (callNumber, name) VALUES """
-            query1 += """('{0}','{1}')""".format(
-                qcallNumber,
-                author)
-        authstring = ""
-        for author in qotherAuthors:
-            authstring += author + '?'
-        message = Markup('You added multiple authors: ' + authstring)
-        flash(message, 'success')
+                qcopyNo = 1
+                query = """INSERT INTO Book_Copy (callNumber, copyNo, status) VALUES """
+                query += """('{0}','{1}','{2}')""".format(
+                    qcallNumber,
+                    qcopyNo,
+                    'in')
+                qresult = db.engine.execute(query)
+                message = Markup('Adding as copy: ' + query)
+                flash(message, 'warning')
 
-        qsubjects = []
-        for row in csv.reader([request.form['subjects']]):
-            for value in row:
-                qsubjects.append(value.strip())
-        substring = ""
-        for subject in qsubjects:
-            substring += subject + '?'
-        message = Markup('You added multiple subjects: ' + substring)
-        flash(message, 'success')
+                if request.form['otherAuthor'] != "":
+                    qotherAuthors = []
+                    qotherAuthors.append(qmainAuthor)
+                    for row in csv.reader([request.form['otherAuthor']]):
+                        for value in row:
+                            qotherAuthors.append(value.strip())
+                    for author in qotherAuthors:
+                        query1 = """INSERT INTO Has_Author (callNumber, name) VALUES """
+                        query1 += """('{0}','{1}')""".format(
+                            qcallNumber,
+                            author)
+                        message = Markup('You added multiple authors: ' + query1)
+                        flash(message, 'success')
+                        qresult = db.engine.execute(query1)
+
+                if request.form['subjects'] != "":
+                    qsubjects = []
+                    for row in csv.reader([request.form['subjects']]):
+                        for value in row:
+                            qsubjects.append(value.strip())
+                    for subject in qsubjects:
+                        query2 = """INSERT INTO Has_Subject (callNumber, subject) VALUES """
+                        query2 += """('{0}','{1}')""".format(
+                            qcallNumber,
+                            subject)
+                        message = Markup('You added multiple subjects: ' + query2)
+                        flash(message, 'success')
+                        qresult = db.engine.execute(query2)
 
     return render_template('admin/new.html',
                            title='New Item',
