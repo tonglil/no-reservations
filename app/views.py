@@ -111,12 +111,12 @@ def checkout():
     qbid = request.form['borrowerId']
     qcallNumber = request.form['callNumber']
     qcopyNo = request.form['copyNo']
-    
+
     if qbid == "" or qcallNumber == "" or qcopyNo == "":
         message = Markup('Please fill in all fields.')
         flash(message, 'warning')
     else:
-        query = """select 
+        query = """select
                     from borrower
                     where bid='{}'""".format(borrowerID)
         qresult = db.engine.execute(query).first()
@@ -126,7 +126,7 @@ def checkout():
         else:
             query = """select status
                         from book_copy as bc
-                        where bc.callNumber ='{0}' and 
+                        where bc.callNumber ='{0}' and
                         bc.copyNo='{1}'""".format(qcallNumber,qcopyNo)
             qresult = db.engine.execute(query).first()
             if qresult == "on-hold":
@@ -142,8 +142,8 @@ def checkout():
                             copyNo='{1}'""".format(qcallNumber,qcopyNo)
                 qresult = db.engine.execute(query)
                 #query = """
-            
-            
+
+
     return render_template('admin/checkout.html',
                            title='Checkout Items',
                            user=user
@@ -158,11 +158,45 @@ def returns():
                            )
 
 
-@app.route('/item/new')
+@app.route('/item/new', methods = ['GET', 'POST'])
 def itemNew():
+    results = None
+    err = False
+    if request.method == 'POST':
+        qcallNumber = request.form['callNumber']
+        qisbn = request.form['isbn']
+        qtitle = request.form['title']
+        qmainAuthor = request.form['mainAuthor']
+        qpublisher = request.form['publisher']
+        qyear = request.form['year']
+
+        if (
+            qcallNumber == "" or
+            qisbn == "" or
+            qtitle == "" or
+            qmainAuthor == "" or
+            qpublisher == "" or
+            qyear == ""
+            ):
+            message = Markup('All fields must be completed.')
+            flash(message, 'warning')
+        else:
+            query = """INSERT INTO Book (callNumber, isbn, title, mainAuthor, publisher, year) VALUES"""
+            query += """('{0}','{1}','{2}','{3}','{4}','{5}')""".format(
+                qcallNumber,
+                qisbn,
+                qtitle,
+                qmainAuthor,
+                qpublisher,
+                qyear)
+        qresult = db.engine.execute(query)
+        message = Markup('You added an item. Query is: ' + query)
+        flash(message, 'success')
+
     return render_template('admin/new.html',
                            title='New Item',
-                           user=user
+                           user=user,
+                           results = results
                            )
 #@app.route('/item/add')
 #@app.route('/item/:item/hold')
