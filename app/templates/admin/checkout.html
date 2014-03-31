@@ -27,13 +27,6 @@
             </div>
             
             <div class="form-group">
-              <label for="inputCopyNo" class="col-lg-2 control-label">Item Copy Number</label>
-              <div class="col-lg-10">
-                <input class="form-control" name="copyNo" id="inputcopyNo" placeholder="" type="text">
-              </div>
-            </div>  
-            
-            <div class="form-group">
               <div class="col-lg-10 col-lg-offset-2">
                 <button type="submit" class="btn btn-success">Checkout</button>
                 <button class="btn btn-default">Cancel</button>
@@ -43,7 +36,7 @@
         </form>
     </div>
 
-    {% if results %}
+    {% if receipt %}
     <div class="results">
         <div class="page-header">
             <h2>Checkout Receipt</h2>
@@ -59,11 +52,13 @@
           </thead>
 
           <tbody>
+            {% for item in receipt %}
             <tr>
-              <td>{{result['title']}}</td>
-              <td>{{result['callNumber']}}</td>
-              <td>{{result['dueDate']}}</td>
+              <td>{{item['title']}}</td>
+              <td>{{item['callNumber']}}</td>
+              <td>{{item['dueDate']}}</td>
             </tr>
+            {% endfor %}
           </tbody>
         </table>
     </div>

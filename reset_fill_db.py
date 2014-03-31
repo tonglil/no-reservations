@@ -93,7 +93,7 @@ db.session.add(holdrequest_a)
 borrowing_a = models.Borrowing(borid=22, bid=borrower_b.bid, callNumber=bookcopy_ba.callNumber, copyNo=bookcopy_ba.copyNo, outDate=datetime.datetime(year=2013, month=1, day=1))
 db.session.add(borrowing_a)
 
-borrowing_b = models.Borrowing(borid=33, bid=borrower_b.bid, callNumber=bookcopy_aa.callNumber, copyNo=bookcopy_aa.copyNo, outDate=datetime.datetime.now())
+borrowing_b = models.Borrowing(borid=33, bid=borrower_b.bid, callNumber=bookcopy_aa.callNumber, copyNo=bookcopy_aa.copyNo, outDate=datetime.datetime.now(), inDate=datetime.datetime.now() + datetime.timedelta(days=10))
 db.session.add(borrowing_b)
 
 ##############################################

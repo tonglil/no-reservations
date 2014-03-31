@@ -108,17 +108,16 @@ def results():
 
 @app.route('/checkout', methods=['POST', 'GET'])
 def checkout():
+    receipt=None
     if request.method == 'POST':
         qbid = request.form['borrowerId']
         qcallNumber = request.form['callNumber']
-        qcopyNo = request.form['copyNo']
         qoutDate = datetime.datetime.now()
         qinDate = datetime.datetime.now() + datetime.timedelta(days=14)
         
         if (
             qbid == "" or 
-            qcallNumber == "" or 
-            qcopyNo == ""
+            qcallNumber == ""
         ):
             message = Markup('Please fill in all fields.')
             flash(message, 'error')
@@ -131,43 +130,49 @@ def checkout():
                 message = Markup('Borrower does not exist.')
                 flash(message, 'error')
             else:
-                query = """select status
+                query = """select status, copyNo
                             from book_copy
-                            where callNumber ='{0}' and 
-                            copyNo='{1}'""".format(qcallNumber,qcopyNo)
-                qresult = db.engine.execute(query).first()
-                if qresult.status == "on-hold":
-                    message = Markup('Copy is on hold.')
-                    flash(message, 'warning')
-                elif qresult.status == "out":
-                    message = Markup('Copy has been taken out.')
-                    flash(message, 'warning')
+                            where callNumber ='{}'""".format(qcallNumber)
+                qresult = db.engine.execute(query).fetchall()
+                for r in qresult:
+                    if r.status == "in":
+                        query = """update book_copy
+                                    set status='out'
+                                    where callNumber='{0}' and
+                                    copyNo='{1}'""".format(qcallNumber,r.copyNo)
+                        qresult = db.engine.execute(query)
+                
+                        query = """insert into borrowing(bid, callNumber, copyNo, outDate) values"""
+                        query += """('{0}','{1}','{2}','{3}')""".format(qbid,
+                             qcallNumber,   
+                             r.copyNo,
+                             qoutDate)
+                        qresult = db.engine.execute(query)
+                        
+                        query = """select title
+                            from book
+                            where callNumber='{}'""".format(qcallNumber)
+                        qresults = db.engine.execute(query).fetchall()
+                        receipt = []
+                        for result in qresults:
+                            item = {}
+                            item['title'] = result.title
+                            item['callNumber'] = qcallNumber
+                            item['dueDate'] = qinDate
+                            receipt.append(item)
+                        message = Markup('A copy has been successfully checked out.')
+                        flash(message, 'message')
+                        break
                 else:
-                    query = """update book_copy
-                                set status='out'
-                                where callNumber='{0}' and
-                                copyNo='{1}'""".format(qcallNumber,qcopyNo)
-                    qresult = db.engine.execute(query)
+                    message = Markup('All copies are out or on hold.')
+                    flash(message, 'warning')
                     
-                    query = """insert into borrowing(bid, callNumber, copyNo, outDate) values"""
-                    query += """('{0}','{1}','{2}','{3}')""".format(qbid,
-                                 qcallNumber,   
-                                 qcopyNo,
-                                 qoutDate)
-                    qresult = db.engine.execute(query)
-                    
-                    result = {}
-                    query = """select title
-                                from book
-                                where callNumber='{}'""".format(qcallNumber)
-                    qresult = db.engine.execute(query).first()
-                    result['title'] = qresult
-                    result['callNumber'] = qcallNumber
-                    result['dueDate'] = qinDate
+
             
     return render_template('admin/checkout.html',
                            title='Checkout Items',
-                           user=user
+                           user=user,
+                           receipt=receipt
                            )
 
 
