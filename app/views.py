@@ -166,9 +166,7 @@ def checkout():
                 else:
                     message = Markup('All copies are out or on hold.')
                     flash(message, 'warning')
-                    
 
-            
     return render_template('admin/checkout.html',
                            title='Checkout Items',
                            user=user,
@@ -444,6 +442,53 @@ def borrowerAccount(borrower_id):
                            fines=fines
                            )
 
+#TODO: hold urls should map to:
+#/hold/borrower_id/remove and
+#/hold/borrower_id/new
+#@app.route('/borrower/<int:borrower_id>/holdcancel', methods=['POST'])
+@app.route('/borrower/<int:borrower_id>/holdrequest', methods=['POST', 'GET'])
+def placeHoldRequest(borrower_id):
+    if request.method == 'POST':
+        #check if call number is valid
+        #check if a copy of the book is available
+        #place hold request
+        callNumber = request.form['callNumber']
+        query = """select title
+                    from book
+                    where callNumber='{}'""".format(callNumber)
+        qresult = db.engine.execute(query).first()
+        if qresult is None: #Invalid call number
+            message = Markup('The call number "{}" is not associated with a book.'.format(callNumber))
+            flash(message, 'error')
+        else:
+            title = qresult.title
+            query = """select *
+                        from book_copy
+                        where status='in' and callNumber='{}'""".format(callNumber)
+            qresult = db.engine.execute(query).fetchall()
+            if len(qresult) == 0:
+                query = """select *
+                            from hold_request
+                            where bid='{0}' and callNumber='{1}'""".format(borrower_id,
+                                                                            callNumber)
+                qresult=db.engine.execute(query).first()
+                if qresult is None:
+                    query = """insert into hold_request (bid, callNumber)
+                                VALUES ('{0}', '{1}')""".format(borrower_id,
+                                                                callNumber)
+                    db.engine.execute(query)
+                    message = Markup('Hold request placed for the book "{}".'.format(title))
+                    flash(message, 'success')
+                else:
+                    message = Markup('Hold request not placed. You have already placed a hold request on the book "{}".'.format(title))
+                    flash(message, 'warning')
+            else:
+                message = Markup('Hold request not placed. A copy of the book "{}" is available.'.format(title))
+                flash(message, 'warning')
+    return render_template('borrower/holdrequest.html',
+                            title='Place Hold Request',
+                            user=user
+                            )
 
 @app.route('/borrower/<int:borrower_id>/fines', methods=['POST', 'GET'])
 def payFines(borrower_id):
@@ -456,7 +501,7 @@ def payFines(borrower_id):
             break
         db.engine.execute(query)
         message = Markup('You have paid a fine.')
-        flash(message, 'warning')
+        flash(message, 'success')
     fines = None
     query = """select fid, amount, issuedDate
                 from fine as f, borrowing as b

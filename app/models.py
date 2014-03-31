@@ -80,7 +80,6 @@ class BookCopy(db.Model):
     borrowings = db.relationship('Borrowing', backref='book_copy',
                                  lazy='dynamic')
 
-
 # HoldRequest *:1 Borrower
 # HoldRequest *:1 Book
 class HoldRequest(db.Model):
@@ -88,7 +87,7 @@ class HoldRequest(db.Model):
     bid = db.Column(db.Integer, db.ForeignKey('borrower.bid'), nullable=False)
     callNumber = db.Column(db.String(50), db.ForeignKey('book.callNumber'),
                            nullable=False)
-    issuedDate = db.Column(db.DateTime)
+    issuedDate = db.Column(db.DateTime, server_default=str(datetime.now()))
 
 
 # This model is a little special in that to define a composite foreign key it
@@ -102,7 +101,7 @@ class Borrowing(db.Model):
     bid = db.Column(db.Integer, db.ForeignKey('borrower.bid'), nullable=False)
     callNumber = db.Column(db.String(50), nullable=False)
     copyNo = db.Column(db.String(10), nullable=False)
-    outDate = db.Column(db.DateTime, default=datetime.now())
+    outDate = db.Column(db.DateTime, server_default=str(datetime.now()))
     inDate = db.Column(db.DateTime)
     __table_args__ = (ForeignKeyConstraint([callNumber, copyNo],
                                            [BookCopy.callNumber,
@@ -115,7 +114,7 @@ class Borrowing(db.Model):
 class Fine(db.Model):
     fid = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Numeric(12, 2))
-    issuedDate = db.Column(db.DateTime, default=datetime.now())
+    issuedDate = db.Column(db.DateTime, server_default=str(datetime.now()))
     paidDate = db.Column(db.DateTime)
     borid = db.Column(db.Integer, db.ForeignKey('borrowing.borid'),
                       nullable=False)
