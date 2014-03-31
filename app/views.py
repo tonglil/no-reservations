@@ -111,12 +111,12 @@ def checkout():
     qbid = request.form['borrowerId']
     qcallNumber = request.form['callNumber']
     qcopyNo = request.form['copyNo']
-    
+
     if qbid == "" or qcallNumber == "" or qcopyNo == "":
         message = Markup('Please fill in all fields.')
         flash(message, 'warning')
     else:
-        query = """select 
+        query = """select
                     from borrower
                     where bid='{}'""".format(borrowerID)
         qresult = db.engine.execute(query).first()
@@ -126,7 +126,7 @@ def checkout():
         else:
             query = """select status
                         from book_copy as bc
-                        where bc.callNumber ='{0}' and 
+                        where bc.callNumber ='{0}' and
                         bc.copyNo='{1}'""".format(qcallNumber,qcopyNo)
             qresult = db.engine.execute(query).first()
             if qresult == "on-hold":
@@ -142,8 +142,8 @@ def checkout():
                             copyNo='{1}'""".format(qcallNumber,qcopyNo)
                 qresult = db.engine.execute(query)
                 #query = """
-            
-            
+
+
     return render_template('admin/checkout.html',
                            title='Checkout Items',
                            user=user
@@ -329,6 +329,10 @@ def borrowerAccount(borrower_id):
                            fines=fines
                            )
 
+#TODO: hold urls should map to:
+#/hold/borrower_id/remove and
+#/hold/borrower_id/new
+#@app.route('/borrower/<int:borrower_id>/holdcancel', methods=['POST'])
 @app.route('/borrower/<int:borrower_id>/holdrequest', methods=['POST', 'GET'])
 def placeHoldRequest(borrower_id):
     if request.method == 'POST':

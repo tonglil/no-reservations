@@ -153,17 +153,20 @@
                 <th>Call Number</th>
                 <th>Title</th>
                 <th>Issued Date</th>
+                <th>Cancel</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                {% for hr in holdRequests %}
-                <td>{{hr['hid']}}</td>
-                <td>{{hr['callNumber']}}</td>
-                <td>{{hr['title']}}</td>
-                <td>{{hr['issuedDate']}}</td>
-                {% endfor %}
-              </tr>
+              {% for hr in holdRequests %}
+                <tr>
+                  <td>{{hr['hid']}}</td>
+                  <td>{{hr['callNumber']}}</td>
+                  <td>{{hr['title']}}</td>
+                  <td>{{hr['issuedDate']}}</td>
+                  {# TODO: not implemented yet #}
+                  <td><a href="/borrower/{{hr['hid']}}/holdcancel" class="btn btn-success btn-xs">Cancel Hold</a></td>
+                </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
@@ -176,16 +179,19 @@
                 <th>Fine ID</th>
                 <th>Issued Date</th>
                 <th>Amount</th>
+                <th>Pay</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                {% for fine in fines %}
-                <td>{{fine['fid']}}</td>
-                <td>{{fine['issuedDate']}}</td>
-                <td>{{fine['amount']}}</td>
-                {% endfor %}
-              </tr>
+              {% for fine in fines %}
+                <tr>
+                  <td>{{fine['fid']}}</td>
+                  <td>{{fine['issuedDate']}}</td>
+                  <td>{{fine['amount']}}</td>
+                  {# TODO: not implemented yet #}
+                  <td><a href="/borrower/{{fine['fid']}}/fines" class="btn btn-success btn-xs">Cancel Hold</a></td>
+                </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
