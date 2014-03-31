@@ -13,6 +13,9 @@
         <table class="table table-striped table-hover table-bordered">
           <thead>
             <tr class="success">
+              <th>BID</th>
+              <th>Name</th>
+              <th>Email</th>
               <th>Title</th>
               <th>Call Number</th>
               <th>Copy Number</th>
@@ -23,6 +26,9 @@
           <tbody>
             {% for item in overdue %}
             <tr>
+              <td>{{item['bid']}}</td>
+              <td>{{item['name']}}</td>
+              <td>{{item['email']}}</td>
               <td>{{item['title']}}</td>
               <td>{{item['callNumber']}}</td>
               <td>{{item['copyNo']}}</td>
