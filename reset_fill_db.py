@@ -177,6 +177,21 @@ bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber,
                               status="in")
 db.session.add(bookcopy_ab)
 
+bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber,
+                              copyNo="3",
+                              status="out")
+db.session.add(bookcopy_ab)
+
+bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber,
+                              copyNo="4",
+                              status="out")
+db.session.add(bookcopy_ab)
+
+bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber,
+                              copyNo="5",
+                              status="out")
+db.session.add(bookcopy_ab)
+
 bookcopy_ba = models.BookCopy(callNumber=book_b.callNumber,
                               copyNo="1",
                               status="out")
@@ -219,13 +234,46 @@ borrowing_a = models.Borrowing(borid=22,
                                copyNo=bookcopy_ba.copyNo,
                                outDate=datetime.datetime(year=2013,
                                                          month=1,
+                                                         day=1),
+                               inDate=datetime.datetime(year=2013,
+                                                         month=2,
+                                                         day=1))
+db.session.add(borrowing_a)
+
+borrowing_a = models.Borrowing(borid=23,
+                               bid=borrower_b.bid,
+                               callNumber=bookcopy_ba.callNumber,
+                               copyNo=bookcopy_ba.copyNo,
+                               outDate=datetime.datetime(year=2014,
+                                                         month=2,
                                                          day=1))
 db.session.add(borrowing_a)
 
 borrowing_b = models.Borrowing(borid=33,
                                bid=borrower_b.bid,
                                callNumber=bookcopy_aa.callNumber,
-                               copyNo=bookcopy_aa.copyNo,
+                               copyNo=1,
+                               outDate=datetime.datetime.now())
+db.session.add(borrowing_b)
+
+borrowing_b = models.Borrowing(borid=34,
+                               bid=borrower_b.bid,
+                               callNumber=bookcopy_aa.callNumber,
+                               copyNo=3,
+                               outDate=datetime.datetime.now())
+db.session.add(borrowing_b)
+
+borrowing_b = models.Borrowing(borid=35,
+                               bid=borrower_b.bid,
+                               callNumber=bookcopy_aa.callNumber,
+                               copyNo=4,
+                               outDate=datetime.datetime.now())
+db.session.add(borrowing_b)
+
+borrowing_b = models.Borrowing(borid=36,
+                               bid=borrower_b.bid,
+                               callNumber=bookcopy_aa.callNumber,
+                               copyNo=5,
                                outDate=datetime.datetime.now())
 db.session.add(borrowing_b)
 

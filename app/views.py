@@ -559,7 +559,7 @@ def reportCheckedout():
 
             book['inDate'] = result.inDate
 
-            if datetime.datetime.now() > book['dueDate']:
+            if datetime.datetime.now() > book['dueDate'] and book['inDate'] is None:
                 book['overdue'] = 'Yes'
             else:
                 book['overdue'] = 'No'
@@ -585,16 +585,17 @@ def reportPopular():
             message = Markup('Put a Limit and Year')
             flash(message, 'warning')
         else:
-            query = """SELECT B.callNumber,year,COUNT(R.callNumber) AS numcheout,B.title
+            query = """SELECT B.callNumber,COUNT(R.callNumber) AS numcheout,B.title,outDate
                         FROM Borrowing R, Book B
-                        WHERE R.callNumber = B.callNumber AND year = """ +year+ """
+                        WHERE R.callNumber = B.callNumber AND YEAR(outDate) = """ + year + """
                         GROUP BY R.callNumber
                         ORDER BY numcheout DESC
                         LIMIT """ + limit
             qresults = db.engine.execute(query).fetchall()
             for result in qresults:
                 topResult = {}
-                topResult['rank'] = rank + 1
+                rank = rank + 1
+                topResult['rank'] = rank
                 topResult['callNumber'] = result.callNumber
                 topResult['title'] = result.title
                 topResult['times'] = result.numcheout
