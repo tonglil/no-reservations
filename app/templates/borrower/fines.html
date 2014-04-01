@@ -14,9 +14,9 @@
         <thead>
           <tr class="success">
             <th>Fine ID</th>
-            <th>Issued Date</th>
+            <th>Fine Issued Date</th>
             <th>Amount</th>
-            <th></th>
+            <th>Pay</th>
           </tr>
         </thead>
 
@@ -27,7 +27,7 @@
               <td>{{fine['fid']}}</td>
               <td>{{fine['issuedDate']}}</td>
               <td>{{fine['amount']}}</td>
-              <td><button type="submit" class="btn btn-success" name="{{fine['fid']}}">Pay Fine</button></td>
+              <td><button type="submit" class="btn btn-success btn-xs" name="{{fine['fid']}}">Pay Fine</button></td>
             </tr>
           {% endfor %}
           {% endif %}

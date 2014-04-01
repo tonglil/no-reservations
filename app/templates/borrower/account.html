@@ -96,7 +96,7 @@
                 <th>Title</th>
                 <th>Author</th>
                 <th>Out Date</th>
-                <th>Expiry Date</th>
+                <th>Due Date</th>
               </tr>
             </thead>
             <tbody>
@@ -124,7 +124,7 @@
                 <th>Title</th>
                 <th>Author</th>
                 <th>Out Date</th>
-                <th>Expiry Date</th>
+                <th>Due Date</th>
               </tr>
             </thead>
             <tbody>
@@ -152,7 +152,8 @@
                 <th>Hold ID</th>
                 <th>Call Number</th>
                 <th>Title</th>
-                <th>Issued Date</th>
+                <th>Author</th>
+                <th>Hold Issued Date</th>
                 <th>Cancel</th>
               </tr>
             </thead>
@@ -162,6 +163,7 @@
                   <td>{{hr['hid']}}</td>
                   <td>{{hr['callNumber']}}</td>
                   <td>{{hr['title']}}</td>
+                  <td>{{hr['mainAuthor']}}</td>
                   <td>{{hr['issuedDate']}}</td>
                   {# TODO: not implemented yet #}
                   <td><a href="/borrower/{{hr['hid']}}/holdcancel" class="btn btn-success btn-xs">Cancel Hold</a></td>
@@ -177,7 +179,7 @@
             <thead>
               <tr class="success">
                 <th>Fine ID</th>
-                <th>Issued Date</th>
+                <th>Fine Issued Date</th>
                 <th>Amount</th>
                 <th>Pay</th>
               </tr>
@@ -189,7 +191,7 @@
                   <td>{{fine['issuedDate']}}</td>
                   <td>{{fine['amount']}}</td>
                   {# TODO: not implemented yet #}
-                  <td><a href="/borrower/{{fine['fid']}}/fines" class="btn btn-success btn-xs">Cancel Hold</a></td>
+                  <td><a href="/borrower/{{fine['fid']}}/fines" class="btn btn-success btn-xs">Pay Fine</a></td>
                 </tr>
               {% endfor %}
             </tbody>

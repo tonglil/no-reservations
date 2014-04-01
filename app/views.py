@@ -533,7 +533,7 @@ def borrowerAccount(borrower_id):
                              item(s).'''.format(overdue))
             flash(message, 'warning')
 
-        query = """select hid, h.callNumber, title, issuedDate from
+        query = """select hid, h.callNumber, title, mainAuthor, issuedDate from
         hold_request as h, book as b where bid='{}' and
         b.callNumber=h.callNumber""".format(borrower_id)
         qresults = db.engine.execute(query).fetchall()
@@ -543,6 +543,7 @@ def borrowerAccount(borrower_id):
             hr['hid'] = result.hid
             hr['callNumber'] = result.callNumber
             hr['title'] = result.title
+            hr['mainAuthor'] = result.mainAuthor
             hr['issuedDate'] = result.issuedDate
             holdRequests.append(hr)
 
