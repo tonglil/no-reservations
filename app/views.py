@@ -457,9 +457,7 @@ def borrowerNew():
             else:
                 query = """insert into borrower(password, name, address, phone,
                 emailAddress, sinOrStNo, expiryDate, type) values"""
-                query += """('
-                {0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}
-                ')""".format(qpassword,
+                query += """('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}')""".format(qpassword,
                              qname,
                              qaddress,
                              qphoneNumber,
