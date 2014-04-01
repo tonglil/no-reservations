@@ -115,9 +115,9 @@ def checkout():
         qcallNumber = request.form['callNumber']
         qoutDate = datetime.datetime.now()
         qinDate = datetime.datetime.now() + datetime.timedelta(days=14)
-        
+
         if (
-            qbid == "" or 
+            qbid == "" or
             qcallNumber == ""
         ):
             message = Markup('Please fill in all fields.')
@@ -142,14 +142,14 @@ def checkout():
                                     where callNumber='{0}' and
                                     copyNo='{1}'""".format(qcallNumber,r.copyNo)
                         qresult = db.engine.execute(query)
-                
+
                         query = """insert into borrowing(bid, callNumber, copyNo, outDate) values"""
                         query += """('{0}','{1}','{2}','{3}')""".format(qbid,
-                             qcallNumber,   
+                             qcallNumber,
                              r.copyNo,
                              qoutDate)
                         qresult = db.engine.execute(query)
-                        
+
                         query = """select title
                             from book
                             where callNumber='{}'""".format(qcallNumber)
@@ -181,7 +181,7 @@ def returns():
         qcallNumber = request.form['callNumber']
         qcopyNo = request.form['copyNo']
         qinDate = datetime.datetime.now()
-        
+
         if (
             qcallNumber == "" or
             qcopyNo == ""
@@ -208,15 +208,15 @@ def returns():
                             where callNumber='{0}' and
                             copyNo='{1}'""".format(qcallNumber,qcopyNo)
                 qresults = db.engine.execute(query).first()
-                
+
                 #if late, assign fine
                 if qinDate > (qresults.outDate + datetime.timedelta(days=14)) :
-                    query = """select borid 
+                    query = """select borid
                                 from borrowing
                                 where callNumber='{0}' and
                                 copyNo='{1}'""".format(qcallNumber,qcopyNo)
                     qresults = db.engine.execute(query).first()
-                    query = """insert into fine(amount, issuedDate, borid) 
+                    query = """insert into fine(amount, issuedDate, borid)
                                 values"""
                     query += """('
                     {0}','{1}','{2}
@@ -226,7 +226,7 @@ def returns():
                     qresult = db.engine.execute(query)
                     message = Markup('Late return, a fee was assigned.')
                     flash(message, 'warning')
-                
+
                 #if there are no holds, set book status in, otherwise notify holdee
                 query = """select *
                             from hold_request
@@ -256,7 +256,7 @@ def returns():
                                 from borrower
                                 where bid='{}'""".format(qresult)
                     qresult = db.engine.execute(query).first() #contains email address of holdee
-                    
+
                     query = """select *
                                 from book
                                 where callNumber='{0}' and
@@ -268,11 +268,11 @@ def returns():
                            title='Process Returns',
                            user=user
                            )
-                           
+
 @app.route('/report/overdue')
 def overdue():
     overdueRange = datetime.datetime.now() - datetime.timedelta(days=14)
-    
+
     query = """select *
                 from borrowing
                 where inDate is NULL
@@ -300,7 +300,7 @@ def overdue():
         item['copyNo'] = result.copyNo
         item['dueDate'] = result.outDate + datetime.timedelta(days=14)
         overdue.append(item)
-                
+
     return render_template('report/overdue.html',
                            title='Overdue Items',
                            user=user,
@@ -674,7 +674,7 @@ def reportCheckedout():
             subject = request.form['subjects']
             query = """SELECT *,B.callNumber as BCallNumber,C.copyNo as CCopyNo
                         FROM Book_Copy C, Borrowing R, Book B
-                        WHERE C.status = 'out' AND C.callNumber = R.callNumber AND C.copyNo = R.copyNo AND B.callNumber = C.callNumber AND EXISTS (SELECT *
+                        WHERE C.status = 'out' AND C.callNumber = R.callNumber AND C.copyNo = R.copyNo AND B.callNumber = C.callNumber AND R.inDate IS NULL AND EXISTS (SELECT *
                                         FROM Book B, Has_Subject S
                                         WHERE B.callNumber = S.callNumber AND S.subject = '""" + subject + """' AND C.callNumber = B.callNumber)
                         ORDER BY C.callNumber"""
@@ -682,7 +682,7 @@ def reportCheckedout():
     else:
         query = """SELECT *,B.callNumber as BCallNumber,C.copyNo as CCopyNo
                     FROM Book_Copy C, Borrowing R, Book B
-                    WHERE C.status = 'out' AND C.callNumber = R.callNumber AND C.copyNo = R.copyNo AND B.callNumber = C.callNumber
+                    WHERE C.status = 'out' AND C.callNumber = R.callNumber AND C.copyNo = R.copyNo AND B.callNumber = C.callNumber AND R.inDate IS NULL
                     ORDER BY C.callNumber"""
         qresults = db.engine.execute(query).fetchall()
     if qresults == None:
