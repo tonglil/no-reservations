@@ -294,7 +294,7 @@ def overdue():
         item['bid'] = result.bid
         item['name'] = qborrower.name
         item['emailAddress'] = qborrower.emailAddress
-        item['title'] = qtitle
+        item['title'] = qtitle.title
         item['callNumber'] = result.callNumber
         item['copyNo'] = result.copyNo
         item['dueDate'] = result.outDate + datetime.timedelta(days=14)
@@ -302,7 +302,8 @@ def overdue():
                 
     return render_template('report/overdue.html',
                            title='Overdue Items',
-                           user=user
+                           user=user,
+                           overdue=overdue
                            )
 
 
