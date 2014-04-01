@@ -23,12 +23,12 @@
         <tbody>
           {% if fines %}
           {% for fine in fines %}
-          <tr>
-            <td>{{fine['fid']}}</td>
-            <td>{{fine['issuedDate']}}</td>
-            <td>{{fine['amount']}}</td>
-            <td><button type="submit" class="btn btn-success btn-xs" name="{{fine['fid']}}">Pay Fine</button></td>
-          </tr>
+            <tr>
+              <td>{{fine['fid']}}</td>
+              <td>{{fine['issuedDate']}}</td>
+              <td>{{fine['amount']}}</td>
+              <td><button type="submit" class="btn btn-success" name="{{fine['fid']}}">Pay Fine</button></td>
+            </tr>
           {% endfor %}
           {% endif %}
         </tbody>

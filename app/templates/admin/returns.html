@@ -7,26 +7,22 @@
     </div>
 
     {{ flash() }}
-    <div class="alert alert-dismissable alert-danger">
-          <button type="button" class="close" data-dismiss="alert">×</button>
-          <h4>Error</h4>
-          <p>Unable to process item: <a href="#" class="alert-link">err</a>.</p>
-    </div>
-
-    <div class="alert alert-dismissable alert-success">
-          <button type="button" class="close" data-dismiss="alert">×</button>
-          <h4>Success</h4>
-          <p>Item returned and processed!</p>
-    </div>
 
     <div class="well">
-        <form class="form-horizontal">
+        <form class="form-horizontal" action="/returns" method="post">
           <fieldset>
             <legend>Complete all fields</legend>
             <div class="form-group">
               <label for="inputCallNumber" class="col-lg-2 control-label">Item Call Number</label>
               <div class="col-lg-10">
                 <input class="form-control" name="callNumber" id="inputCallNumber" placeholder="" type="text">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="inputCopyNo" class="col-lg-2 control-label">Item Copy Number</label>
+              <div class="col-lg-10">
+                <input class="form-control" name="copyNo" id="inputCopyNo" placeholder="" type="text">
               </div>
             </div>
 
