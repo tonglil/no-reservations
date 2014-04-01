@@ -260,8 +260,7 @@ def returns():
 
                     query = """select *
                                 from book
-                                where callNumber='{0}' and
-                                copyNo='{1}'""".format(qcallNumber, qcopyNo)
+                                where callNumber='{0}'""".format(qcallNumber)
                     qbook = db.engine.execute(query).fetchall() #contains book information of item on hold
                     #notify holdee by sending email
 
