@@ -28,7 +28,8 @@ def results():
         qauthor = request.form['author']
 
         if qtitle == "" and qsubject == "" and qauthor == "":
-            message = Markup('Bad search: <a href="#" class="alert-link">you must complete at least one field</a>.')
+            message = Markup('''Bad search: <a href="#" class="alert-link">you
+                             must complete at least one field</a>.''')
             flash(message, 'error')
         else:
             query = """select distinct b.callNumber
@@ -110,7 +111,7 @@ def results():
 
 @app.route('/checkout', methods=['POST', 'GET'])
 def checkout():
-    receipt=None
+    receipt = None
     if request.method == 'POST':
         qbid = request.form['borrowerId']
         qcallNumber = request.form['callNumber']
@@ -128,7 +129,7 @@ def checkout():
                         from borrower
                         where bid='{}'""".format(qbid)
             qresult = db.engine.execute(query).first()
-            if qresult == None:
+            if qresult is None:
                 message = Markup('Borrower does not exist.')
                 flash(message, 'error')
             else:
@@ -141,14 +142,18 @@ def checkout():
                         query = """update book_copy
                                     set status='out'
                                     where callNumber='{0}' and
-                                    copyNo='{1}'""".format(qcallNumber,r.copyNo)
+                                    copyNo='{1}'""".format(qcallNumber,
+                                                           r.copyNo)
                         qresult = db.engine.execute(query)
 
-                        query = """insert into borrowing(bid, callNumber, copyNo, outDate) values"""
-                        query += """('{0}','{1}','{2}','{3}')""".format(qbid,
-                             qcallNumber,
-                             r.copyNo,
-                             qoutDate)
+                        query = """insert into borrowing(bid, callNumber,
+                        copyNo, outDate) values"""
+                        query += """('
+                        {0}','{1}','{2}','{3}
+                        ')""".format(qbid,
+                                     qcallNumber,
+                                     r.copyNo,
+                                     qoutDate)
                         qresult = db.engine.execute(query)
 
                         query = """select title
@@ -162,7 +167,8 @@ def checkout():
                             item['callNumber'] = qcallNumber
                             item['dueDate'] = qinDate
                             receipt.append(item)
-                        message = Markup('A copy has been successfully checked out.')
+                        message = Markup('''A copy has been successfully
+                                         checked out.''')
                         flash(message, 'success')
                         break
                 else:
@@ -193,7 +199,7 @@ def returns():
             query = """select status
                         from book_copy
                         where callNumber='{0}' and
-                        copyNo='{1}'""".format(qcallNumber,qcopyNo)
+                        copyNo='{1}'""".format(qcallNumber, qcopyNo)
             qresult = db.engine.execute(query).first()
             if qresult.status == "in":
                 message = Markup('This book has not been taken out.')
@@ -202,20 +208,21 @@ def returns():
                 query = """update borrowing
                             set inDate='{0}'
                             where callNumber='{1}' and
-                            copyNo='{2}'""".format(qinDate,qcallNumber,qcopyNo)
+                            copyNo='{2}'""".format(qinDate, qcallNumber,
+                                                   qcopyNo)
                 qresults = db.engine.execute(query)
                 query = """select outDate
                             from borrowing
                             where callNumber='{0}' and
-                            copyNo='{1}'""".format(qcallNumber,qcopyNo)
+                            copyNo='{1}'""".format(qcallNumber, qcopyNo)
                 qresults = db.engine.execute(query).first()
 
                 #if late, assign fine
-                if qinDate > (qresults.outDate + datetime.timedelta(days=14)) :
+                if qinDate > (qresults.outDate + datetime.timedelta(days=14)):
                     query = """select borid
                                 from borrowing
                                 where callNumber='{0}' and
-                                copyNo='{1}'""".format(qcallNumber,qcopyNo)
+                                copyNo='{1}'""".format(qcallNumber, qcopyNo)
                     qresults = db.engine.execute(query).first()
                     query = """insert into fine(amount, issuedDate, borid)
                                 values"""
@@ -228,7 +235,8 @@ def returns():
                     message = Markup('Late return, a fee was assigned.')
                     flash(message, 'warning')
 
-                #if there are no holds, set book status in, otherwise notify holdee
+                #if there are no holds, set book status in,
+                #otherwise notify holdee
                 query = """select *
                             from hold_request
                             where callNumber='{}'""".format(qcallNumber)
@@ -239,7 +247,8 @@ def returns():
                                 where callNumber='{0}' and
                                 copyNo='{1}'""".format(qcallNumber, qcopyNo)
                     qresults = db.engine.execute(query)
-                    message = Markup('Item successfully returned and processed.')
+                    message = Markup('''Item successfully returned and
+                                     processed.''')
                     flash(message, 'success')
                 else:
                     query = """update book_copy
@@ -256,18 +265,22 @@ def returns():
                     query = """select emailAddress
                                 from borrower
                                 where bid='{}'""".format(qresult)
-                    qresult = db.engine.execute(query).first() #contains email address of holdee
+                    #contains email address of holdee
+                    qresult = db.engine.execute(query).first()
 
                     query = """select *
                                 from book
-                                where callNumber='{0}'""".format(qcallNumber)
-                    qbook = db.engine.execute(query).fetchall() #contains book information of item on hold
+                                where callNumber='{0}' and
+                                copyNo='{1}'""".format(qcallNumber, qcopyNo)
+                    #contains book information of item on hold
+                    qbook = db.engine.execute(query).fetchall()
                     #notify holdee by sending email
 
     return render_template('admin/returns.html',
                            title='Process Returns',
                            user=user
                            )
+
 
 @app.route('/report/overdue')
 def overdue():
@@ -308,10 +321,9 @@ def overdue():
                            )
 
 
-@app.route('/item/new', methods = ['GET', 'POST'])
+@app.route('/item/new', methods=['GET', 'POST'])
 def itemNew():
     results = None
-    err = False
     if request.method == 'POST':
         qcallNumber = request.form['callNumber']
         qisbn = request.form['isbn'].replace("-", "")
@@ -326,7 +338,7 @@ def itemNew():
             qmainAuthor == "" or
             qpublisher == "" or
             qyear == ""
-            ):
+        ):
             message = Markup('All fields must be completed.')
             flash(message, 'warning')
         else:
@@ -341,7 +353,8 @@ def itemNew():
                 qresults = db.engine.execute(query).fetchall()
                 for row in qresults:
                     qcopyNo = int(row[0]) + 1
-                query = """INSERT INTO Book_Copy (callNumber, copyNo, status) VALUES """
+                query = """INSERT INTO Book_Copy (callNumber, copyNo, status)
+                VALUES"""
                 query += """('{0}','{1}','{2}')""".format(
                     qcallNumber,
                     qcopyNo,
@@ -350,7 +363,8 @@ def itemNew():
                 message = Markup('This book already exists, adding as copy')
                 flash(message, 'success')
             else:
-                query = """INSERT INTO Book (callNumber, isbn, title, mainAuthor, publisher, year) VALUES """
+                query = """INSERT INTO Book (callNumber, isbn, title,
+                mainAuthor, publisher, year) VALUES"""
                 query += """('{0}','{1}','{2}','{3}','{4}','{5}')""".format(
                     qcallNumber,
                     qisbn,
@@ -363,7 +377,8 @@ def itemNew():
                 flash(message, 'success')
 
                 qcopyNo = 1
-                query = """INSERT INTO Book_Copy (callNumber, copyNo, status) VALUES """
+                query = """INSERT INTO Book_Copy (callNumber, copyNo, status)
+                VALUES"""
                 query += """('{0}','{1}','{2}')""".format(
                     qcallNumber,
                     qcopyNo,
@@ -379,11 +394,13 @@ def itemNew():
                         for value in row:
                             qotherAuthors.append(value.strip())
                     for author in qotherAuthors:
-                        query1 = """INSERT INTO Has_Author (callNumber, name) VALUES """
+                        query1 = """INSERT INTO Has_Author (callNumber, name)
+                        VALUES"""
                         query1 += """('{0}','{1}')""".format(
                             qcallNumber,
                             author)
-                        # message = Markup('You added multiple authors: ' + query1)
+                        #message = Markup('You added multiple authors: ' +
+                                         #query1)
                         # flash(message, 'success')
                         qresult = db.engine.execute(query1)
 
@@ -393,18 +410,20 @@ def itemNew():
                         for value in row:
                             qsubjects.append(value.strip())
                     for subject in qsubjects:
-                        query2 = """INSERT INTO Has_Subject (callNumber, subject) VALUES """
+                        query2 = """INSERT INTO Has_Subject (callNumber,
+                        subject) VALUES"""
                         query2 += """('{0}','{1}')""".format(
                             qcallNumber,
                             subject)
-                        # message = Markup('You added multiple subjects: ' + query2)
+                        #message = Markup('You added multiple subjects: ' +
+                                         #query2)
                         # flash(message, 'success')
                         qresult = db.engine.execute(query2)
 
     return render_template('admin/new.html',
                            title='New Item',
                            user=user,
-                           results = results
+                           results=results
                            )
 #@app.route('/item/add')
 #@app.route('/item/:item/hold')
@@ -415,7 +434,6 @@ def itemNew():
 @app.route('/borrower/new', methods=['POST', 'GET'])
 def borrowerNew():
     results = None
-    err = False
 
     if request.method == 'POST':
         title = 'New Borrower Account'
@@ -457,7 +475,9 @@ def borrowerNew():
             else:
                 query = """insert into borrower(password, name, address, phone,
                 emailAddress, sinOrStNo, expiryDate, type) values"""
-                query += """('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}')""".format(qpassword,
+                query += """('
+                {0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}
+                ')""".format(qpassword,
                              qname,
                              qaddress,
                              qphoneNumber,
@@ -572,6 +592,7 @@ def borrowerAccount(borrower_id):
                            fines=fines
                            )
 
+
 #TODO: hold urls should map to:
 #/hold/borrower_id/remove and
 #/hold/borrower_id/new
@@ -587,38 +608,45 @@ def placeHoldRequest(borrower_id):
                     from book
                     where callNumber='{}'""".format(callNumber)
         qresult = db.engine.execute(query).first()
-        if qresult is None: #Invalid call number
-            message = Markup('The call number "{}" is not associated with a book.'.format(callNumber))
+        if qresult is None:  # Invalid call number
+            message = Markup('''The call number "{}" is not associated with a
+                             book.'''.format(callNumber))
             flash(message, 'error')
         else:
             title = qresult.title
             query = """select *
                         from book_copy
-                        where status='in' and callNumber='{}'""".format(callNumber)
+                        where status='in' and
+                        callNumber='{}'""".format(callNumber)
             qresult = db.engine.execute(query).fetchall()
             if len(qresult) == 0:
                 query = """select *
                             from hold_request
-                            where bid='{0}' and callNumber='{1}'""".format(borrower_id,
-                                                                            callNumber)
-                qresult=db.engine.execute(query).first()
+                            where bid='{0}' and
+                            callNumber='{1}'""".format(borrower_id, callNumber)
+                qresult = db.engine.execute(query).first()
                 if qresult is None:
                     query = """insert into hold_request (bid, callNumber)
                                 VALUES ('{0}', '{1}')""".format(borrower_id,
                                                                 callNumber)
                     db.engine.execute(query)
-                    message = Markup('Hold request placed for the book "{}".'.format(title))
+                    message = Markup('''Hold request placed for the book
+                                     "{}".'''.format(title))
                     flash(message, 'success')
                 else:
-                    message = Markup('Hold request not placed. You have already placed a hold request on the book "{}".'.format(title))
+                    message = Markup('''Hold request not placed. You have
+                                     already placed a hold request on the book
+                                     "{}".'''.format(title))
                     flash(message, 'warning')
             else:
-                message = Markup('Hold request not placed. A copy of the book "{}" is available.'.format(title))
+                message = Markup('''Hold request not placed. A copy of the book
+                                 "{}" is available.'''.format(title))
                 flash(message, 'warning')
-    return render_template('borrower/holdrequest.html',
-                            title='Place Hold Request',
-                            user=user
-                            )
+                return render_template('borrower/holdrequest.html',
+                                       title='Place Hold Request',
+                                       user=user
+                                       )
+
 
 @app.route('/borrower/<int:borrower_id>/fines', methods=['POST', 'GET'])
 def payFines(borrower_id):
@@ -655,6 +683,7 @@ def payFines(borrower_id):
                            fines=fines
                            )
 
+
 #checkedout, popular
 @app.route('/report/checkedout', methods=['GET', 'POST'])
 def reportCheckedout():
@@ -672,19 +701,23 @@ def reportCheckedout():
         else:
             subject = request.form['subjects']
             query = """SELECT *,B.callNumber as BCallNumber,C.copyNo as CCopyNo
-                        FROM Book_Copy C, Borrowing R, Book B
-                        WHERE C.status = 'out' AND C.callNumber = R.callNumber AND C.copyNo = R.copyNo AND B.callNumber = C.callNumber AND R.inDate IS NULL AND EXISTS (SELECT *
-                                        FROM Book B, Has_Subject S
-                                        WHERE B.callNumber = S.callNumber AND S.subject = '""" + subject + """' AND C.callNumber = B.callNumber)
-                        ORDER BY C.callNumber"""
+            FROM Book_Copy C, Borrowing R, Book B
+            WHERE C.status = 'out' AND C.callNumber = R.callNumber
+            AND C.copyNo = R.copyNo AND B.callNumber = C.callNumber
+            AND R.inDate IS NULL AND EXISTS (SELECT *
+            FROM Book B, Has_Subject S
+            WHERE B.callNumber = S.callNumber AND S.subject = '"""
+            + subject + """' AND C.callNumber = B.callNumber)
+            ORDER BY C.callNumber"""
             qresults = db.engine.execute(query).fetchall()
     else:
         query = """SELECT *,B.callNumber as BCallNumber,C.copyNo as CCopyNo
-                    FROM Book_Copy C, Borrowing R, Book B
-                    WHERE C.status = 'out' AND C.callNumber = R.callNumber AND C.copyNo = R.copyNo AND B.callNumber = C.callNumber AND R.inDate IS NULL
-                    ORDER BY C.callNumber"""
+        FROM Book_Copy C, Borrowing R, Book B
+        WHERE C.status = 'out' AND C.callNumber = R.callNumber AND
+        C.copyNo = R.copyNo AND B.callNumber = C.callNumber AND
+        R.inDate IS NULL ORDER BY C.callNumber"""
         qresults = db.engine.execute(query).fetchall()
-    if qresults == None:
+    if qresults is None:
         message = Markup('Bad search')
         flash(message, 'warning')
     elif len(qresults) == 0:
@@ -705,11 +738,17 @@ def reportCheckedout():
                         where bid='{}' and b.type=t.type""".format(result.bid)
             timeLimit = db.engine.execute(typeQuery).first()
 
-            book['dueDate'] = result.outDate + (timeLimit.bookTimeLimit - datetime.datetime(year=1970, month=1, day=1))
+            book['dueDate'] = result.outDate + (timeLimit.bookTimeLimit -
+                                                datetime.datetime(year=1970,
+                                                                  month=1,
+                                                                  day=1))
 
             book['inDate'] = result.inDate
 
-            if datetime.datetime.now() > book['dueDate'] and book['inDate'] is None:
+            if (
+                datetime.datetime.now() > book['dueDate']
+                and book['inDate'] is None
+            ):
                 book['overdue'] = 'Yes'
             else:
                 book['overdue'] = 'No'
@@ -721,6 +760,7 @@ def reportCheckedout():
                            booksout=booksout,
                            subject=subject
                            )
+
 
 @app.route('/report/popular', methods=['GET', 'POST'])
 def reportPopular():
@@ -735,12 +775,10 @@ def reportPopular():
             message = Markup('Put a Limit and Year')
             flash(message, 'warning')
         else:
-            query = """SELECT B.callNumber,COUNT(R.callNumber) AS numcheout,B.title,outDate
-                        FROM Borrowing R, Book B
-                        WHERE R.callNumber = B.callNumber AND YEAR(outDate) = """ + year + """
-                        GROUP BY R.callNumber
-                        ORDER BY numcheout DESC
-                        LIMIT """ + limit
+            query = """SELECT B.callNumber,COUNT(R.callNumber) AS
+            numcheout,B.title,outDate FROM Borrowing R, Book B WHERE
+            R.callNumber = B.callNumber AND YEAR(outDate) = """ + year + """
+            GROUP BY R.callNumber ORDER BY numcheout DESC LIMIT """ + limit
             qresults = db.engine.execute(query).fetchall()
             for result in qresults:
                 topResult = {}

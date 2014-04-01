@@ -29,6 +29,17 @@ db.session.add(type_staff)
 ##############################################
 #borrower
 ##############################################
+borrower_a = models.Borrower(bid=333,
+                             password="ijkl",
+                             name="Doge",
+                             address="Coin",
+                             phone="18005555555",
+                             emailAddress="such@wow.com",
+                             sinOrStNo="55556666",
+                             expiryDate=datetime.date(2014, 5, 1),
+                             type=type_staff.type)
+db.session.add(borrower_a)
+
 borrower_b = models.Borrower(bid=111,
                              password="abcd",
                              name="Bill Bennet",
@@ -52,21 +63,10 @@ borrower_c = models.Borrower(bid=222,
                              type=type_faculty.type)
 db.session.add(borrower_c)
 
-borrower_d = models.Borrower(bid=333,
-                             password="ijkl",
-                             name="Doge",
-                             address="Coin",
-                             phone="18005555555",
-                             emailAddress="such@wow.com",
-                             sinOrStNo="55556666",
-                             expiryDate=datetime.date(2014, 5, 1),
-                             type=type_staff.type)
-db.session.add(borrower_d)
-
 ##############################################
 #book
 ##############################################
-book_a = models.Book(callNumber="PQ2605.A37 E813 1989",
+book_a = models.Book(callNumber="AAAA",
                      isbn="9780679720201",
                      title="The Stranger",
                      mainAuthor="Albert Camus",
@@ -74,7 +74,7 @@ book_a = models.Book(callNumber="PQ2605.A37 E813 1989",
                      year="1989")
 db.session.add(book_a)
 
-book_b = models.Book(callNumber="PZ7.R79835 Hp 1997",
+book_b = models.Book(callNumber="BBBB",
                      isbn="0747532699",
                      title="Harry Potter and the Philosopher's Stone",
                      mainAuthor="J.K. Rowling",
@@ -82,7 +82,7 @@ book_b = models.Book(callNumber="PZ7.R79835 Hp 1997",
                      year="1997")
 db.session.add(book_b)
 
-book_c = models.Book(callNumber="PZ7.R79835 Ht 1998a",
+book_c = models.Book(callNumber="CCCC",
                      isbn="1551922444",
                      title="Harry Potter and the Chamber of Secrets",
                      mainAuthor="J.K. Rowling",
@@ -90,7 +90,7 @@ book_c = models.Book(callNumber="PZ7.R79835 Ht 1998a",
                      year="1998")
 db.session.add(book_c)
 
-book_d = models.Book(callNumber="QH441.2 .M55 1996",
+book_d = models.Book(callNumber="DDDD",
                      isbn="9780262133166",
                      title="An Introduction to Genetic Algorithms",
                      mainAuthor="Melanie Mitchell",
@@ -98,7 +98,7 @@ book_d = models.Book(callNumber="QH441.2 .M55 1996",
                      year="1998")
 db.session.add(book_d)
 
-book_e = models.Book(callNumber="AI782.4 .O98 2008",
+book_e = models.Book(callNumber="EEEE",
                      isbn="9780142412145",
                      title="Let It Snow",
                      mainAuthor="John Green",
@@ -182,20 +182,20 @@ bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber,
                               status="in")
 db.session.add(bookcopy_ab)
 
-bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber,
+bookcopy_ac = models.BookCopy(callNumber=book_a.callNumber,
                               copyNo="3",
                               status="out")
-db.session.add(bookcopy_ab)
+db.session.add(bookcopy_ac)
 
-bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber,
+bookcopy_ad = models.BookCopy(callNumber=book_a.callNumber,
                               copyNo="4",
                               status="out")
-db.session.add(bookcopy_ab)
+db.session.add(bookcopy_ad)
 
-bookcopy_ab = models.BookCopy(callNumber=book_a.callNumber,
+bookcopy_ae = models.BookCopy(callNumber=book_a.callNumber,
                               copyNo="5",
                               status="out")
-db.session.add(bookcopy_ab)
+db.session.add(bookcopy_ae)
 
 bookcopy_ba = models.BookCopy(callNumber=book_b.callNumber,
                               copyNo="1",
@@ -245,40 +245,58 @@ borrowing_d = models.Borrowing(borid=21,
                                                         day=1))
 db.session.add(borrowing_d)
 
-borrowing_a = models.Borrowing(borid=22,
-                               bid=borrower_b.bid,
-                               callNumber=bookcopy_ba.callNumber,
-                               copyNo=bookcopy_ba.copyNo,
-                               outDate=datetime.datetime(year=2013,
-                                                         month=1,
-                                                         day=1),
-                               inDate=datetime.datetime(year=2013,
-                                                        month=2,
-                                                        day=1))
-db.session.add(borrowing_a)
-
-borrowing_a = models.Borrowing(borid=23,
-                               bid=borrower_b.bid,
-                               callNumber=bookcopy_ba.callNumber,
-                               copyNo=bookcopy_ba.copyNo,
-                               outDate=datetime.datetime(year=2014,
+borrowing_aa = models.Borrowing(borid=22,
+                                bid=borrower_b.bid,
+                                callNumber=bookcopy_aa.callNumber,
+                                copyNo=bookcopy_aa.copyNo,
+                                outDate=datetime.datetime(year=2013,
+                                                          month=1,
+                                                          day=1),
+                                inDate=datetime.datetime(year=2013,
                                                          month=2,
                                                          day=1))
-db.session.add(borrowing_a)
+db.session.add(borrowing_aa)
 
-borrowing_b = models.Borrowing(borid=33,
-                               bid=borrower_b.bid,
-                               callNumber=bookcopy_aa.callNumber,
-                               copyNo=1,
-                               outDate=datetime.datetime.now())
-db.session.add(borrowing_b)
+borrowing_ac = models.Borrowing(borid=23,
+                                bid=borrower_b.bid,
+                                callNumber=bookcopy_ac.callNumber,
+                                copyNo=bookcopy_ac.copyNo,
+                                outDate=datetime.datetime(year=2014,
+                                                          month=2,
+                                                          day=1))
+db.session.add(borrowing_ac)
 
-borrowing_b = models.Borrowing(borid=34,
-                               bid=borrower_b.bid,
-                               callNumber=bookcopy_aa.callNumber,
-                               copyNo=3,
-                               outDate=datetime.datetime.now())
-db.session.add(borrowing_b)
+borrowing_ad = models.Borrowing(borid=24,
+                                bid=borrower_b.bid,
+                                callNumber=bookcopy_ad.callNumber,
+                                copyNo=bookcopy_ad.copyNo,
+                                outDate=datetime.datetime(year=2014,
+                                                          month=2,
+                                                          day=1))
+db.session.add(borrowing_ad)
+
+borrowing_ae = models.Borrowing(borid=25,
+                                bid=borrower_b.bid,
+                                callNumber=bookcopy_ae.callNumber,
+                                copyNo=bookcopy_ae.copyNo,
+                                outDate=datetime.datetime(year=2014,
+                                                          month=2,
+                                                          day=1))
+db.session.add(borrowing_ae)
+
+borrowing_ba = models.Borrowing(borid=26,
+                                bid=borrower_a.bid,
+                                callNumber=bookcopy_ba.callNumber,
+                                copyNo=1,
+                                outDate=datetime.datetime.now())
+db.session.add(borrowing_ba)
+
+borrowing_ea = models.Borrowing(borid=34,
+                                bid=borrower_a.bid,
+                                callNumber=bookcopy_ea.callNumber,
+                                copyNo=1,
+                                outDate=datetime.datetime.now())
+db.session.add(borrowing_ea)
 
 borrowing_b = models.Borrowing(borid=35,
                                bid=borrower_b.bid,
@@ -301,13 +319,13 @@ db.session.add(borrowing_b)
 fine_a = models.Fine(fid=123,
                      amount=2852.12,
                      issuedDate=datetime.datetime.now(),
-                     borid=borrowing_a.borid)
+                     borid=borrowing_ac.borid)
 db.session.add(fine_a)
 
 fine_b = models.Fine(fid=456,
                      amount=852.12,
                      issuedDate=datetime.datetime.now(),
-                     borid=borrowing_b.borid)
+                     borid=borrowing_ae.borid)
 db.session.add(fine_b)
 
 db.session.commit()

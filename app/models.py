@@ -80,6 +80,7 @@ class BookCopy(db.Model):
     borrowings = db.relationship('Borrowing', backref='book_copy',
                                  lazy='dynamic')
 
+
 # HoldRequest *:1 Borrower
 # HoldRequest *:1 Book
 class HoldRequest(db.Model):
