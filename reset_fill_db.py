@@ -94,7 +94,7 @@ book_d = models.Book(callNumber="QH441.2 .M55 1996",
                      isbn="9780262133166",
                      title="An Introduction to Genetic Algorithms",
                      mainAuthor="Melanie Mitchell",
-                     publisher="Mit Press",
+                     publisher="MIT Press",
                      year="1998")
 db.session.add(book_d)
 
@@ -168,8 +168,8 @@ db.session.add(hassubject_e2)
 #book_copy
 ##############################################
 bookcopy_z = models.BookCopy(callNumber=book_d.callNumber,
-                              copyNo="3",
-                              status="out")
+                             copyNo="3",
+                             status="out")
 db.session.add(bookcopy_z)
 
 bookcopy_aa = models.BookCopy(callNumber=book_a.callNumber,
@@ -241,8 +241,8 @@ borrowing_d = models.Borrowing(borid=21,
                                                          month=1,
                                                          day=1),
                                inDate=datetime.datetime(year=2013,
-                                                         month=2,
-                                                         day=1))
+                                                        month=2,
+                                                        day=1))
 db.session.add(borrowing_d)
 
 borrowing_a = models.Borrowing(borid=22,
@@ -253,8 +253,8 @@ borrowing_a = models.Borrowing(borid=22,
                                                          month=1,
                                                          day=1),
                                inDate=datetime.datetime(year=2013,
-                                                         month=2,
-                                                         day=1))
+                                                        month=2,
+                                                        day=1))
 db.session.add(borrowing_a)
 
 borrowing_a = models.Borrowing(borid=23,
