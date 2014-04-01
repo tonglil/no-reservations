@@ -36,8 +36,8 @@ def results():
             if qtitle != "":
                 query += "b.title like '%%{}%%' and ".format(qtitle)
             if qsubject != "":
-                query += """b.callNumber=s.callNumber and s.subject like
-                '%%{}%%' and """.format(qsubject)
+                query += """b.callNumber=s.callNumber and s.subject=
+                '{}' and """.format(qsubject)
             if qauthor != "":
                 query += "(b.mainAuthor like '%%{}%%' or ".format(qauthor)
                 query += """(b.callNumber=a.callNumber and a.name like
@@ -57,7 +57,7 @@ def results():
                 for callNumber in qresults:
                     result = {}
 
-                    callNumber = callNumber[0]
+                    callNumber = callNumber.callNumber
                     query = """select *
                                 from book
                                 where callNumber='{}'""".format(callNumber)
@@ -67,25 +67,26 @@ def results():
                     result['mainAuthor'] = qresult.mainAuthor
                     result['year'] = qresult.year
 
-                    query = """select name
+                    query = """select *
                                 from has_author
                                 where callNumber='{}'""".format(callNumber)
                     qresult = db.engine.execute(query).fetchall()
                     result['authors'] = ""
                     for r in qresult:
-                        result['authors'] += str(r[0]) + ', '
+                        if r.name != result['mainAuthor']:
+                            result['authors'] += r.name + ', '
                     result['authors'] = result['authors'][0:-2]
 
-                    query = """select subject
+                    query = """select *
                                 from has_subject
                                 where callNumber='{}'""".format(callNumber)
                     qresult = db.engine.execute(query).fetchall()
                     result['subjects'] = ""
                     for r in qresult:
-                        result['subjects'] += str(r[0]) + ', '
+                        result['subjects'] += r.subject + ', '
                     result['subjects'] = result['subjects'][0:-2]
 
-                    query = """select status
+                    query = """select *
                                 from book_copy
                                 where callNumber='{}'""".format(callNumber)
                     qresult = db.engine.execute(query).fetchall()
@@ -93,7 +94,7 @@ def results():
                     result['out'] = 0
                     result['on-hold'] = 0
                     for r in qresult:
-                        result[r[0]] += 1
+                        result[r.status] += 1
 
                     results.append(result)
     else:
@@ -255,20 +256,20 @@ def borrowerAccount(borrower_id):
         borrowerInfo = qresults
 
         borrowedItems = []
-        query = """select borid, c.callNumber as cn, title, mainAuthor, outDate
+        query = """select borid, c.callNumber, title, mainAuthor, outDate
                     from borrowing as b, book as c
                     where b.callNumber=c.callNumber
                     and bid='{}'
                     and inDate is NULL""".format(borrower_id)
         qresults = db.engine.execute(query).fetchall()
-        typeQuery = """select bookTimeLimit
+        typeQuery = """select *
                         from borrower as b, borrower_type as t
                         where bid='{}' and b.type=t.type""".format(borrower_id)
         timeLimit = db.engine.execute(typeQuery).first()
         for result in qresults:
             borrowedItem = {}
             borrowedItem['borid'] = result.borid
-            borrowedItem['callNumber'] = result.cn
+            borrowedItem['callNumber'] = result.callNumber
             borrowedItem['title'] = result.title
             borrowedItem['mainAuthor'] = result.mainAuthor
             borrowedItem['outDate'] = result.outDate
@@ -304,7 +305,7 @@ def borrowerAccount(borrower_id):
             hr['issuedDate'] = result.issuedDate
             holdRequests.append(hr)
 
-        query = """select fid, amount, issuedDate
+        query = """select *
                     from fine as f, borrowing as b
                     where f.borid=b.borid and b.bid='{}'
                     and paidDate is NULL""".format(borrower_id)
@@ -340,7 +341,7 @@ def placeHoldRequest(borrower_id):
         #check if a copy of the book is available
         #place hold request
         callNumber = request.form['callNumber']
-        query = """select title
+        query = """select *
                     from book
                     where callNumber='{}'""".format(callNumber)
         qresult = db.engine.execute(query).first()
@@ -390,7 +391,7 @@ def payFines(borrower_id):
         message = Markup('You have paid a fine.')
         flash(message, 'success')
     fines = None
-    query = """select fid, amount, issuedDate
+    query = """select *
                 from fine as f, borrowing as b
                 where f.borid=b.borid and b.bid='{}'
                 and paidDate is NULL""".format(borrower_id)
